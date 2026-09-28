@@ -58,10 +58,11 @@ from to reach j, so we can rebuild the path
     prev = {j: p for j, p in prev.items() if j in settled}
     return settled, prev, stats
 
- ""This function walks backwards from the target using prev, then flips the list so it reads start to end."""
-def build_path(prev: dict, target: str) -> list[str]:
-    if target not in prev:
-        return []
+    """This function walks backwards from the target using prev, then flips the list so it reads start to end."""
+
+    def build_path(prev: dict, target: str) -> list[str]:
+        if target not in prev:
+            return []
     path = []
     node = target
     while node is not None:
@@ -69,3 +70,10 @@ def build_path(prev: dict, target: str) -> list[str]:
         node = prev[node]
     path.reverse()
     return path
+
+"""This function runs Dijkstra from start and gives us the route to end, the total minutes, and the stats."""
+def fastest_route(graph: dict, start: str, end: str) -> tuple[list[str], int, dict]:
+    dist, prev, stats = dijkstra(graph, start)
+    if end not in dist:
+        return [], -1, stats        # -1 means there is no way to get there
+    return build_path(prev, end), dist[end], stats
