@@ -71,9 +71,16 @@ from to reach j, so we can rebuild the path
     path.reverse()
     return path
 
-"""This function runs Dijkstra from start and gives us the route to end, the total minutes, and the stats."""
-def fastest_route(graph: dict, start: str, end: str) -> tuple[list[str], int, dict]:
-    dist, prev, stats = dijkstra(graph, start)
+    """This function runs Dijkstra from start and gives us the route to end, the total minutes, and the stats."""
+    def fastest_route(graph: dict, start: str, end: str) -> tuple[list[str], int, dict]:
+     dist, prev, stats = dijkstra(graph, start)
     if end not in dist:
-        return [], -1, stats        # -1 means there is no way to get there
+    return [], -1, stats        # -1 means there is no way to get there
     return build_path(prev, end), dist[end], stats
+
+    """This function gives the minutes for each road on a path, so we can print the route leg by leg."""
+    def road_times_along(graph: dict, path: list[str]) -> list[int]:
+        legs = []
+    for a, b in zip(path, path[1:]):
+        legs.append(min(m for n, m in graph[a] if n == b))
+        return legs
