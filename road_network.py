@@ -3,7 +3,7 @@ import os
  
 HERE = os.path.dirname(os.path.abspath(__file__))
  
- """This helps us find the CSV file even if we run the code from a different folder in our  Code."""
+"""This helps us find the CSV file even if we run the code from a different folder in our  Code."""
 def _path(filename: str) -> str:
     return filename if os.path.isabs(filename) else os.path.join(HERE, filename)
 
@@ -57,4 +57,15 @@ def load_residential_areas(filename: str = "Q2_residential_areas.csv") -> dict:
         for row in reader:
             areas[row["area"].strip()] = row["sits_at_junction"].strip()
     return areas
- 
+
+"""Each road shows up twice in the adjacency list (once from each end), so we divide by 2."""
+def count_roads(graph: dict) -> int:
+    return sum(len(neighbours) for neighbours in graph.values()) // 2
+
+ # Running this file on its own just prints the network so we can check it loaded properly.
+if __name__ == "__main__":
+    g = load_road_network(verbose=True)
+    a = load_residential_areas()
+    print(f"{len(a)} residential areas, {count_roads(g)} roads")
+    for junction in sorted(g):
+        print(f"  {junction}: {g[junction]}")
