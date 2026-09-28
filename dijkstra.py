@@ -33,4 +33,8 @@ def dijkstra(graph: dict, source: str, cutoff: float | None = None) -> tuple[dic
         if node in settled:
             stats["stale_pops"] += 1
             continue
- 
+
+ # With a cutoff, once the smallest time is over the limit, everything else is too, so we stop our search.
+        if cutoff is not None and time > cutoff:
+            break
+        settled[node] = time
