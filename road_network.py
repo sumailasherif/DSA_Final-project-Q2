@@ -18,3 +18,9 @@ def load_road_network(filename: str = "Q2_road_network.csv", verbose: bool = Fal
         for row in reader:
             a, b = row["from"].strip(), row["to"].strip()
             minutes = int(row["minutes"])
+
+             # Dijkstra only works with times that are zero or more, so we stop here if one is negative.
+            if minutes < 0:
+                raise ValueError(f"Negative travel time on {a}-{b}: Dijkstra needs non-negative weights")
+
+    return roads
