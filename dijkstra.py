@@ -1,15 +1,15 @@
 import heapq
 
 from distro import like
+from langgraph import graph
 from traitlets import This
  
- #This function returns our (dist, prev, stats) from the source junction.
+ """This function returns our (dist, prev, stats) from the source junction.
 def dijkstra(graph: dict, source: str, cutoff: float | None = None) -> tuple[dict, dict, dict]:
      dist[j]  = the shortest time in minutes from source to j
-    prev[j]  = the junction we came from to reach j, so we can rebuild the path
-    stats    = how many pushes, pops, edge checks and relaxations we did
- 
-    """If we give a cutoff (like 9 minutes), the search stops once everything left
+    prev[j]  = the junction we came from asyncio import graph
+from to reach j, so we can rebuild the path
+    stats    = how many pushes, pops, edge checks and relaxations we did.If we give a cutoff (like 9 minutes), the search stops once everything left
     is further than that, which is all we need for the coverage part"""
 
     def dijkstra(graph: dict, source: str, cutoff: float | None = None) -> tuple[dict, dict, dict]:
@@ -46,3 +46,15 @@ def dijkstra(graph: dict, source: str, cutoff: float | None = None) -> tuple[dic
                 continue
             new_time = time + minutes
             if neighbour not in tentative or new_time < tentative[neighbour]:
+
+            # This is the relaxation step: we found a faster way, so we save it and push it on the heap.
+                tentative[neighbour] = new_time
+                prev[neighbour] = node
+                heapq.heappush(heap, (new_time, neighbour))
+                stats["relaxations"] += 1
+                stats["pushes"] += 1
+
+    # We only keep the path links for junctions we actually settled.
+    prev = {j: p for j, p in prev.items() if j in settled}
+    return settled, prev, stats
+ 
