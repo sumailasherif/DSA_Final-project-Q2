@@ -7,7 +7,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 def _path(filename: str) -> str:
     return filename if os.path.isabs(filename) else os.path.join(HERE, filename)
 
- """This function reads every road from the CSV and returns the graph."""
+"""This function reads every road from the CSV and returns the graph."""
 def load_road_network(filename: str = "Q2_road_network.csv", verbose: bool = False) -> dict:
     roads = {}          # key = the two junctions in sorted order, value = minutes
     duplicates = []     # any road we see a second time goes here as a duplicate
@@ -24,3 +24,12 @@ def load_road_network(filename: str = "Q2_road_network.csv", verbose: bool = Fal
                 raise ValueError(f"Negative travel time on {a}-{b}: Dijkstra needs non-negative weights")
 
     return roads
+
+    # Sorting the two names means Moka-St Pierre and St Pierre-Moka give the same key.
+    key = tuple(sorted((a, b)))
+    if key in roads:
+                duplicates.append((a, b, minutes))
+                roads[key] = min(roads[key], minutes)   # if they ever disagree we keep the faster one
+    else:
+                roads[key] = minutes
+    graph = build_graph(roads)
