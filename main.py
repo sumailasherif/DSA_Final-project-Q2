@@ -55,4 +55,11 @@ from results_plot import plot_all
     def show_exhaustive(coverage: dict, areas: dict, k: int = 6) -> None:
         _, covered = greedy_place_stops(coverage, k)[:2]
     best, n, stats = exhaustive_best_stops(coverage, areas, k)
-    print(f"\nExhaustive search over all C({len(coverage)}, {k}) = {comb(len(coverage), k):,} sets of stops:")
+    print(f"\nExhaustive search over all C({len(coverage)}, {k}) = {comb(len(coverage), k):,}
+    
+    print(f"  Best: {', '.join(best)} -> {n} areas  ({stats['optimal_sets']} different sets reach {n})")
+    print(f"  Greedy {len(covered)} vs best {n}: gap = {n - len(covered)} area(s)")
+    # We use this to also show what greedy would get if we followed every possible tie-break.
+    outcomes = all_greedy_outcomes(coverage, k)
+    print(f"  If every possible tie-break is followed, greedy ends on: "
+          + ", ".join(f"{c} areas ({p} paths)" for c, p in outcomes.items())) sets of stops:")
