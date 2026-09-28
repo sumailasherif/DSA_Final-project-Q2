@@ -40,3 +40,11 @@ def load_road_network(filename: str = "Q2_road_network.csv", verbose: bool = Fal
         for a, b, m in duplicates:
             print(f"  Note: duplicate row ignored -> {a}, {b}, {m} (same road already listed)")
     return graph
+
+"""This function turns our road list into the adjacency list, adding each road in both directions."""
+def build_graph(roads: dict) -> dict:
+    graph = {}
+    for (a, b), minutes in roads.items():
+        graph.setdefault(a, []).append((b, minutes))   # a can reach b
+        graph.setdefault(b, []).append((a, minutes))   # and b can reach a, because roads are two-way
+    return graph
