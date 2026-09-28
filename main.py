@@ -60,17 +60,20 @@ from results_plot import plot_all
     print(f"  Best: {', '.join(best)} -> {n} areas  ({stats['optimal_sets']} different sets reach {n})")
     print(f"  Greedy {len(covered)} vs best {n}: gap = {n - len(covered)} area(s)")
     # We use this to also show what greedy would get if we followed every possible tie-break.
-    outcomes = all_greedy_outcomes(coverage, k)
-    print(f"  If every possible tie-break is followed, greedy ends on: "
-          + ", ".join(f"{c} areas ({p} paths)" for c, p in outcomes.items())) sets of stops:")
+    outcomes = all_greedy_outcomes(coverage, k);
+    print(f"  If every possible tie-break is followed, greedy ends on: " + ", ".join(f"{c} areas ({p} paths)" for c, p in outcomes.items())) sets of stops:")
 
     def show_counterexample(m: int = 8) -> None:
-    """This function runs our trap network, where greedy loses by 3 areas without any tie."""
-    g, a = build_trap_network(m)
-    cov, _ = build_coverage(g, a)
-    gs, gc, _, _ = greedy_place_stops(cov, 2)
-    es, n, _ = exhaustive_best_stops(cov, a, 2)
-    print(f"\nTrap network (m = {m}, {len(a)} areas, k = 2 stops):")
-    print(f"  Coverage: Centre {len(cov['Centre'])}, West {len(cov['West'])}, East {len(cov['East'])}")
-    print(f"  Greedy  : {', '.join(gs)} -> {len(gc)} areas")
-    print(f"  Optimal : {', '.join(es)} -> {n} areas   (gap {n - len(gc)}, no tie involved)")
+    g, a = build_trap_network(m);
+    cov, _ = build_coverage(g, a);
+    gs, gc, _, _ = greedy_place_stops(cov, 2);
+    es, n, _ = exhaustive_best_stops(cov, a, 2);
+    print(f"\nTrap network (m = {m}, {len(a)} areas, k = 2 stops):");
+    print(f"  Coverage: Centre {len(cov['Centre'])}, West {len(cov['West'])}, East {len(cov['East'])}");
+    print(f"  Greedy  : {', '.join(gs)} -> {len(gc)} areas");
+    print(f"     Optimal : {', '.join(es)} -> {n} areas   (gap {n - len(gc)}, no tie involved)")
+
+    def show_extras(graph: dict, coverage: dict, areas: dict) -> None:
+    """These are the optional extras: the fewest-roads route with BFS, and coverage for 1 to 8 stops."""
+    path = fewest_roads_route(graph, START, END)
+    fast, minutes, _ = fastest_route(graph, START, END)
