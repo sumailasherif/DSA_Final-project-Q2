@@ -1,0 +1,26 @@
+from,to,minutes
+Curepipe,Forest Side,4
+Curepipe,Floreal,6
+Forest Side,Phoenix,7
+Floreal,Vacoas,5
+Vacoas,Phoenix,5
+Phoenix,Quatre Bornes,8
+Vacoas,Quatre Bornes,9
+Quatre Bornes,Ebene,6
+Quatre Bornes,Rose Hill,5
+Ebene,Reduit,4
+Reduit,Moka,7
+Moka,St Pierre,8
+St Pierre,Terre Rouge,14
+Ebene,Pailles,9
+Rose Hill,Beau Bassin,3
+Beau Bassin,Port Louis,12
+Pailles,Port Louis,6
+Port Louis,Terre Rouge,9
+Terre Rouge,Arsenal,7
+Arsenal,Pamplemousses,6
+Terre Rouge,Pamplemousses,11
+Pamplemousses,Trou aux Biches,10
+Moka,Ebene,5
+St Pierre,Moka,8
+Quatre Bornes,Port Louis,25
