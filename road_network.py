@@ -48,3 +48,13 @@ def build_graph(roads: dict) -> dict:
         graph.setdefault(a, []).append((b, minutes))   # a can reach b
         graph.setdefault(b, []).append((a, minutes))   # and b can reach a, because roads are two-way
     return graph
+
+"""This function returns a dictionary of {area name: the junction the area sits at}."""
+def load_residential_areas(filename: str = "Q2_residential_areas.csv") -> dict:
+    areas = {}
+    with open(_path(filename), newline="") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            areas[row["area"].strip()] = row["sits_at_junction"].strip()
+    return areas
+ 
