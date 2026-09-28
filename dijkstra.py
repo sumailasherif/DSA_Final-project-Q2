@@ -38,3 +38,11 @@ def dijkstra(graph: dict, source: str, cutoff: float | None = None) -> tuple[dic
         if cutoff is not None and time > cutoff:
             break
         settled[node] = time
+
+        # Now we look at every road leaving this junction and see if it gives a faster time.
+        for neighbour, minutes in graph[node]:
+            stats["edge_checks"] += 1
+            if neighbour in settled:
+                continue
+            new_time = time + minutes
+            if neighbour not in tentative or new_time < tentative[neighbour]:
