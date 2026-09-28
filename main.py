@@ -49,3 +49,10 @@ from results_plot import plot_all
         print(f"  Round {row['round']}: {row['stop']:15} +{row['gain']} -> {row['total']:2} covered{tie}")
     print(f"  Greedy covers {len(covered)} areas ({stats['gain_evaluations']} gain evaluations)")
     return stops, covered
+
+    """This function finds the true best stops with exhaustive search and prints the gap to greedy."""
+    
+    def show_exhaustive(coverage: dict, areas: dict, k: int = 6) -> None:
+        _, covered = greedy_place_stops(coverage, k)[:2]
+    best, n, stats = exhaustive_best_stops(coverage, areas, k)
+    print(f"\nExhaustive search over all C({len(coverage)}, {k}) = {comb(len(coverage), k):,} sets of stops:")
