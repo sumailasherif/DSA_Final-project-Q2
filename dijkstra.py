@@ -23,4 +23,14 @@ def dijkstra(graph: dict, source: str, cutoff: float | None = None) -> tuple[dic
     settled = {}                # junctions whose shortest time is now final
     heap = [(0, source)]        # (time, junction), the heap always gives us the smallest time first
     stats = {"pushes": 1, "pops": 0, "stale_pops": 0, "edge_checks": 0, "relaxations": 0}
+
+    while heap:
+        # We take out the junction with the smallest time so far.
+        time, node = heapq.heappop(heap)
+        stats["pops"] += 1
+ 
+        # If we already settled this junction, this is just an old entry, so we skip it.
+        if node in settled:
+            stats["stale_pops"] += 1
+            continue
  
