@@ -57,4 +57,15 @@ from to reach j, so we can rebuild the path
     # We only keep the path links for junctions we actually settled.
     prev = {j: p for j, p in prev.items() if j in settled}
     return settled, prev, stats
- 
+
+ ""This function walks backwards from the target using prev, then flips the list so it reads start to end."""
+def build_path(prev: dict, target: str) -> list[str]:
+    if target not in prev:
+        return []
+    path = []
+    node = target
+    while node is not None:
+        path.append(node)
+        node = prev[node]
+    path.reverse()
+    return path
