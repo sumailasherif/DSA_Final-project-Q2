@@ -33,3 +33,10 @@ def load_road_network(filename: str = "Q2_road_network.csv", verbose: bool = Fal
     else:
                 roads[key] = minutes
     graph = build_graph(roads)
+
+    # When verbose is on we print a short summary and the duplicate we skipped.
+    if verbose:
+        print(f"Loaded {len(graph)} junctions and {len(roads)} distinct roads from {filename}")
+        for a, b, m in duplicates:
+            print(f"  Note: duplicate row ignored -> {a}, {b}, {m} (same road already listed)")
+    return graph
