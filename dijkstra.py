@@ -15,4 +15,12 @@ def dijkstra(graph: dict, source: str, cutoff: float | None = None) -> tuple[dic
     def dijkstra(graph: dict, source: str, cutoff: float | None = None) -> tuple[dict, dict, dict]:
         if source not in graph:
          raise KeyError(f"Unknown junction: {source}")
-        
+
+
+# Our source is 0 minutes from itself and it is the first thing in the heap.
+    tentative = {source: 0}     # best time found so far for each junction (not final yet)
+    prev = {source: None}
+    settled = {}                # junctions whose shortest time is now final
+    heap = [(0, source)]        # (time, junction), the heap always gives us the smallest time first
+    stats = {"pushes": 1, "pops": 0, "stale_pops": 0, "edge_checks": 0, "relaxations": 0}
+ 
