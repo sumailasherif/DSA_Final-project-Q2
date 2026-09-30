@@ -11,3 +11,9 @@ def build_coverage(graph: dict, areas: dict, limit: int = COVER_LIMIT,
     for junction in sorted(graph):
         # We find the travel time from this junction to everything within the limit.
         dist, _, stats = dijkstra(graph, junction, cutoff=limit if use_cutoff else None)
+
+          # Then we keep every area whose junction we reached in 9 minutes or less.
+        coverage[junction] = frozenset(
+            area for area, area_junction in areas.items()
+            if area_junction in dist and dist[area_junction] <= limit
+        )
