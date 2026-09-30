@@ -17,3 +17,8 @@ def build_coverage(graph: dict, areas: dict, limit: int = COVER_LIMIT,
             area for area, area_junction in areas.items()
             if area_junction in dist and dist[area_junction] <= limit
         )
+
+         # We add up the operation counts from all the Dijkstra runs.
+        for key in total:
+            total[key] += stats[key]
+    return coverage, total
