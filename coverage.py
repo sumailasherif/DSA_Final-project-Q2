@@ -39,3 +39,15 @@ def areas_covered_by(stops, coverage: dict) -> set:
         covered |= coverage[stop]
     return covered
 
+"""This function turns each junction's coverage into a number where bit i is 1 if area i is covered.""""
+def to_bitmasks(coverage: dict, areas: dict) -> tuple[list[str], list[int]]:
+    area_index = {area: i for i, area in enumerate(sorted(areas))}   # gives every area its own bit position
+    junctions = sorted(coverage)
+    masks = []
+    for j in junctions:
+        m = 0
+        for area in coverage[j]:
+            m |= 1 << area_index[area]    
+        masks.append(m)
+    return junctions, masks
+
