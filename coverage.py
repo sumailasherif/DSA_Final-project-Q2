@@ -51,3 +51,13 @@ def to_bitmasks(coverage: dict, areas: dict) -> tuple[list[str], list[int]]:
         masks.append(m)
     return junctions, masks
 
+ #Running this file on its own prints what every junction covers, biggest first.
+if __name__ == "__main__":
+    from road_network import load_road_network, load_residential_areas
+    g, a = load_road_network(), load_residential_areas()
+    cov, s = build_coverage(g, a)
+    for j in sorted(cov, key=lambda x: (-len(cov[x]), x)):
+        print(f"{j:16} covers {len(cov[j]):2}: {sorted(cov[j])}")
+    print("Operation counts (with 9-minute cutoff):", s)
+
+    
