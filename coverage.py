@@ -31,3 +31,11 @@ def travel_time_table(graph: dict, areas: dict) -> dict:
         dist, _, _ = dijkstra(graph, junction)
         table[junction] = {area: dist.get(j, float("inf")) for area, j in areas.items()}
     return table
+
+"""This function joins the coverage of all the stops into one set of covered areas."""
+def areas_covered_by(stops, coverage: dict) -> set:
+    covered = set()
+    for stop in stops:
+        covered |= coverage[stop]
+    return covered
+
