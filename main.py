@@ -1,8 +1,6 @@
 import sys
 from math import comb
 
-from langgraph import graph
-
 from road_network import load_road_network, load_residential_areas, count_roads
 from dijkstra import fastest_route, road_times_along
 from coverage import build_coverage, COVER_LIMIT
