@@ -23,6 +23,7 @@ def show_network(graph: dict, areas: dict) -> None:
         print(f"  {junction:16} -> {roads}")
 
 
+
 """This function runs our Dijkstra and then prints the fastest route road by road, with the operation counts."""
 def show_fastest_route(graph: dict) -> None:
     path, minutes, stats = fastest_route(graph, START, END)
