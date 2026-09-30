@@ -22,3 +22,12 @@ def build_coverage(graph: dict, areas: dict, limit: int = COVER_LIMIT,
         for key in total:
             total[key] += stats[key]
     return coverage, total
+
+     
+"""This function gives the full time[junction][area] table with no cutoff"""
+def travel_time_table(graph: dict, areas: dict) -> dict:
+    table = {}
+    for junction in sorted(graph):
+        dist, _, _ = dijkstra(graph, junction)
+        table[junction] = {area: dist.get(j, float("inf")) for area, j in areas.items()}
+    return table
