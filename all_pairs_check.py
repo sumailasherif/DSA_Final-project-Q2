@@ -1,6 +1,5 @@
 NF = float("inf")
  
- 
 """This function returns (dist, stats), where dist[a][b] is the shortest time from a to b."""
 def floyd_warshall(graph: dict) -> tuple[dict, dict]:
     nodes = sorted(graph)
@@ -31,6 +30,6 @@ def all_pairs_check(graph: dict) -> tuple[dict, dict]:
 # Running this file on its own prints one result and the step count (18^3 = 5832 on our data).
 if __name__ == "__main__":
     from road_network import load_road_network
-    d, s = floyd_warshall(load_road_network())
+    d, s = all_pairs_check(load_road_network())
     print(f"Curepipe -> Pamplemousses: {d['Curepipe']['Pamplemousses']} minutes")
     print("Operation counts:", s)

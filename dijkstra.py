@@ -1,23 +1,18 @@
 import heapq
 
-from distro import like
-from langgraph import graph
-from traitlets import This
- 
- """This function returns our (dist, prev, stats) from the source junction.
+
 def dijkstra(graph: dict, source: str, cutoff: float | None = None) -> tuple[dict, dict, dict]:
-     dist[j]  = the shortest time in minutes from source to j
-    prev[j]  = the junction we came from asyncio import graph
-from to reach j, so we can rebuild the path
-    stats    = how many pushes, pops, edge checks and relaxations we did.If we give a cutoff (like 9 minutes), the search stops once everything left
+    """This function returns our (dist, prev, stats) from the source junction.
+    dist[j]  = the shortest time in minutes from source to j
+    prev[j]  = the junction we came from, so we can rebuild the path to reach j
+    stats    = how many pushes, pops, edge checks and relaxations we did.
+
+    If we give a cutoff (like 9 minutes), the search stops once everything left
     is further than that, which is all we need for the coverage part"""
+    if source not in graph:
+        raise KeyError(f"Unknown junction: {source}")
 
-    def dijkstra(graph: dict, source: str, cutoff: float | None = None) -> tuple[dict, dict, dict]:
-        if source not in graph:
-         raise KeyError(f"Unknown junction: {source}")
-
-
-# Our source is 0 minutes from itself and it is the first thing in the heap.
+    # Our source is 0 minutes from itself and it is the first thing in the heap.
     tentative = {source: 0}     # best time found so far for each junction (not final yet)
     prev = {source: None}
     settled = {}                # junctions whose shortest time is now final
@@ -28,13 +23,13 @@ from to reach j, so we can rebuild the path
         # We take out the junction with the smallest time so far.
         time, node = heapq.heappop(heap)
         stats["pops"] += 1
- 
+
         # If we already settled this junction, this is just an old entry, so we skip it.
         if node in settled:
             stats["stale_pops"] += 1
             continue
 
- # With a cutoff, once the smallest time is over the limit, everything else is too, so we stop our search.
+        # With a cutoff, once the smallest time is over the limit, everything else is too, so we stop our search.
         if cutoff is not None and time > cutoff:
             break
         settled[node] = time
@@ -46,8 +41,7 @@ from to reach j, so we can rebuild the path
                 continue
             new_time = time + minutes
             if neighbour not in tentative or new_time < tentative[neighbour]:
-
-            # This is the relaxation step: we found a faster way, so we save it and push it on the heap.
+                # This is the relaxation step: we found a faster way, so we save it and push it on the heap.
                 tentative[neighbour] = new_time
                 prev[neighbour] = node
                 heapq.heappush(heap, (new_time, neighbour))
@@ -58,11 +52,11 @@ from to reach j, so we can rebuild the path
     prev = {j: p for j, p in prev.items() if j in settled}
     return settled, prev, stats
 
-    """This function walks backwards from the target using prev, then flips the list so it reads start to end."""
 
-    def build_path(prev: dict, target: str) -> list[str]:
-        if target not in prev:
-            return []
+def build_path(prev: dict, target: str) -> list[str]:
+    """This function walks backwards from the target using prev, then flips the list so it reads start to end."""
+    if target not in prev:
+        return []
     path = []
     node = target
     while node is not None:
@@ -71,16 +65,29 @@ from to reach j, so we can rebuild the path
     path.reverse()
     return path
 
+
+def fastest_route(graph: dict, start: str, end: str) -> tuple[list[str], int, dict]:
     """This function runs Dijkstra from start and gives us the route to end, the total minutes, and the stats."""
-    def fastest_route(graph: dict, start: str, end: str) -> tuple[list[str], int, dict]:
-     dist, prev, stats = dijkstra(graph, start)
+    dist, prev, stats = dijkstra(graph, start)
     if end not in dist:
-    return [], -1, stats        # -1 means there is no way to get there
+        return [], -1, stats        # -1 means there is no way to get there
     return build_path(prev, end), dist[end], stats
 
+
+def road_times_along(graph: dict, path: list[str]) -> list[int]:
     """This function gives the minutes for each road on a path, so we can print the route leg by leg."""
-    def road_times_along(graph: dict, path: list[str]) -> list[int]:
-        legs = []
+    legs = []
     for a, b in zip(path, path[1:]):
         legs.append(min(m for n, m in graph[a] if n == b))
-        return legs
+    return legs
+
+
+if __name__ == "__main__":
+    # Running this file on its own prints the Curepipe to Pamplemousses route.
+    from road_network import load_road_network
+
+    g = load_road_network()
+    route, minutes, s = fastest_route(g, "Curepipe", "Pamplemousses")
+    print(" -> ".join(route))
+    print(f"Total: {minutes} minutes, {len(route) - 1} roads")
+    print("Operation counts:", s)
