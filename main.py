@@ -105,6 +105,19 @@ def run_everything() -> None:
     print("\nStep 4: Plots")
     plot_all()
 
+    """This function prints the menu options."""
+def show_menu() -> None:
+    print("\n=== Curepipe -> Pamplemousses bus route ===")
+    print("1. Show the road network")
+    print("2. Fastest route (Dijkstra)")
+    print("3. Coverage table (areas within 9 minutes of each junction)")
+    print("4. Greedy: place 6 stops")
+    print("5. Exhaustive: best 6 stops and the gap")
+    print("6. Counterexample: where greedy loses by more")
+    print("7. Extras: fewest-roads route (BFS) and coverage for 1-8 stops")
+    print("8. Run everything: tests, measurements, CSVs and plots")
+    print("9. Exit")
+
     
 
 """This function runs everything in order: checks, answers, measurements, then charts."""
