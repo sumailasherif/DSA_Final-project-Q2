@@ -248,4 +248,7 @@ def _human(seconds: float) -> str:
             return f"{seconds / size:,.1f} {unit}"
     return f"{seconds:,.2f} seconds"
 
-    git add benchmark.py; git commit -m "Run all six measurement sections one after the other"
+plt = None     
+def load(filename: str) -> list[dict]:
+    with open(os.path.join(RESULTS_DIR, filename)) as f:
+        return list(csv.DictReader(f))
