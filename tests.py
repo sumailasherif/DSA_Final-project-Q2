@@ -109,3 +109,11 @@ def test_counterexample() -> None:
     assert gs[0] == "Centre" and log[0]["tied_with"] == [], "round 1 is a clear win, not a tie"
     assert (len(gc), n) == (13, 16)
     assert sorted(es) == ["East", "West"]
+
+"""This checks BFS finds a 6-road route that is slower than Dijkstra's 8-road, 59-minute route."""
+def test_bfs_fewest_roads() -> None:
+    g = load_road_network()
+    path = fewest_roads_route(g, "Curepipe", "Pamplemousses")
+    fast, _, _ = fastest_route(g, "Curepipe", "Pamplemousses")
+    assert len(path) - 1 == 6 and len(fast) - 1 == 8
+    assert sum(road_times_along(g, path)) > 59
