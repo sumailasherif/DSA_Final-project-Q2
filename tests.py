@@ -123,3 +123,16 @@ TESTS = [test_loading, test_dijkstra_matches_all_pairs_check, test_fastest_route
          test_cutoff_gives_same_coverage, test_exactly_nine_counts, test_alphabetical_tie_break,
          test_supplied_answers, test_greedy_never_beats_exhaustive,
          test_bitmask_search_matches_plain_sets, test_counterexample, test_bfs_fewest_roads]
+
+"""This function runs every check, prints PASS or FAIL for each, and returns True only if all passed."""
+def run_correctness_checks() -> bool:
+    passed = 0
+    for test in TESTS:
+        try:
+            test()
+            print(f"  PASS  {test.__name__}")
+            passed += 1
+        except AssertionError as error:
+            print(f"  FAIL  {test.__name__}: {error}")
+    print(f"{passed}/{len(TESTS)} checks passed.")
+    return passed == len(TESTS)
