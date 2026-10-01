@@ -1,0 +1,9 @@
+k,greedy,optimal,gap,subsets_evaluated,best_greedy_any_tiebreak,worst_greedy_any_tiebreak,greedy_stops,optimal_stops
+1,6,6,0,18,6,6,Quatre Bornes,Quatre Bornes
+2,9,9,0,153,9,9,Quatre Bornes/Arsenal,Arsenal/Quatre Bornes
+3,12,12,0,816,12,12,Quatre Bornes/Arsenal/Curepipe,Arsenal/Curepipe/Quatre Bornes
+4,15,15,0,3060,15,15,Quatre Bornes/Arsenal/Curepipe/Ebene,Arsenal/Curepipe/Ebene/Quatre Bornes
+5,16,17,1,8568,17,16,Quatre Bornes/Arsenal/Curepipe/Ebene/Moka,Arsenal/Curepipe/Moka/Pailles/Quatre Bornes
+6,17,18,1,18564,18,17,Quatre Bornes/Arsenal/Curepipe/Ebene/Moka/Pailles,Arsenal/Curepipe/Moka/Pailles/Quatre Bornes/Trou aux Biches
+7,18,18,0,31824,18,18,Quatre Bornes/Arsenal/Curepipe/Ebene/Moka/Pailles/Trou aux Biches,Arsenal/Beau Bassin/Curepipe/Moka/Pailles/Phoenix/Trou aux Biches
+8,18,18,0,43758,18,18,Quatre Bornes/Arsenal/Curepipe/Ebene/Moka/Pailles/Trou aux Biches/Beau Bassin,Arsenal/Beau Bassin/Curepipe/Ebene/Moka/Pailles/Phoenix/Trou aux Biches

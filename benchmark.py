@@ -185,7 +185,7 @@ def _scaling_row(v: int, k: int, seed: int, runs: int) -> dict:
             "greedy_gain_evaluations": gs["gain_evaluations"], "greedy_ms": gr_t * 1000,
             "coverage_table_ms_single_run": coverage_ms, "optimal": n, "greedy": len(gcov)}
 
-            """This function shows how exhaustive grows when we keep 6 stops and make the network bigger.
+"""This function shows how exhaustive grows when we keep 6 stops and make the network bigger.
 
 C(V, 6) is a polynomial of degree 6, so doubling V should get close to x64 for big V.
 We also work out the ratio between each size and the one before it.
@@ -253,7 +253,7 @@ def load(filename: str) -> list[dict]:
     with open(os.path.join(RESULTS_DIR, filename)) as f:
         return list(csv.DictReader(f))
 
-        """This chart shows greedy against the true best for 1 to 8 stops, so we can see where the gap opens."""
+"""This chart shows greedy against the true best for 1 to 8 stops, so we can see where the gap opens."""
 def plot_coverage_vs_stops(output: str = "coverage_vs_stops.png") -> None:
     rows = load("coverage_vs_stops.csv")
     k = [int(r["k"]) for r in rows]
@@ -337,6 +337,21 @@ def _save(name: str) -> None:
     plt.close("all")
     print(f" This has been saved {path}")
 
+
+    global plt
+    try:
+        import matplotlib
+        matplotlib.use("Agg")           # we save the charts as files, so no pop-up window is needed
+        import matplotlib.pyplot as plt
+    except ImportError:
+        print("  matplotlib is not installed, so we skip the charts (pip install matplotlib)")
+        return
+    plot_coverage_vs_stops()
+    plot_exhaustive_scaling()
+    plot_counterexample()
+
+
+    
 def plot_all() -> None:
     global plt
     try:
@@ -350,6 +365,15 @@ def plot_all() -> None:
     plot_exhaustive_scaling()
     plot_counterexample()
 
-    if __name__ == "__main__":
+"""This function runs every measurement in order and saves each one as a CSV in the results folder."""
+def run_all_measurements() -> None:
+    measure_real_network()
+    coverage_vs_stops()
+    tie_break_and_threshold()
+    counterexample_table()
+    scaling_fixed_k()
+    scaling_growing_k()
+
+if __name__ == "__main__":
     run_all_measurements()
     plot_all()

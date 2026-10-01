@@ -1,0 +1,4 @@
+limit_minutes,greedy_alphabetical,greedy_reverse_alphabetical,optimal,greedy_outcomes_over_all_tiebreaks
+8,17,17,17,17:96
+9,17,17,18,17:360 18:24
+10,17,18,18,17:192 18:756
