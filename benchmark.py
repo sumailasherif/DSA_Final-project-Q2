@@ -165,3 +165,22 @@ def counterexample_table() -> list[dict]:
             print(f"  m={m:2} k={k}: greedy {len(gc_):2} ({'/'.join(gs)}), optimal {ec:2} ({'/'.join(es)}), gap {ec - len(gc_)}")
     save_csv(rows, "counterexample.csv")
     return rows
+
+"""This function builds one random network with v junctions and times greedy and exhaustive on it."""
+def _scaling_row(v: int, k: int, seed: int, runs: int) -> dict:
+    g, a = generate_random_network(v, seed=seed)
+
+    # We time the coverage table once on its own, since it is shared work for both methods.
+    start = perf_counter()
+    cov, _ = build_coverage(g, a)
+    coverage_ms = (perf_counter() - start) * 1000
+
+    # Then we time only the stop-picking step for exhaustive and for greedy.
+    _, n, s = exhaustive_best_stops(cov, a, k)
+    ex_t = median_time(lambda: exhaustive_best_stops(cov, a, k), runs=runs, warmup=1)
+    _, gcov, _, gs = greedy_place_stops(cov, k)
+    gr_t = median_time(lambda: greedy_place_stops(cov, k), batch=200)
+    return {"V": v, "k": k, "C(V,k)": comb(v, k), "subsets_evaluated": s["subsets_evaluated"],
+            "exhaustive_ms": ex_t * 1000, "us_per_subset": ex_t * 1e6 / s["subsets_evaluated"],
+            "greedy_gain_evaluations": gs["gain_evaluations"], "greedy_ms": gr_t * 1000,
+            "coverage_table_ms_single_run": coverage_ms, "optimal": n, "greedy": len(gcov)}
