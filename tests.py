@@ -44,3 +44,13 @@ def test_cutoff_gives_same_coverage() -> None:
         without, s2 = build_coverage(g, a, use_cutoff=False)
         assert with_cutoff == without
         assert s1["relaxations"] <= s2["relaxations"]
+
+        """This checks the boundary: exactly 9 minutes counts, 10 does not, and 4 + 5 over two roads counts too."""
+def test_exactly_nine_counts() -> None:
+    nine = build_graph({("A", "B"): 9})
+    ten = build_graph({("A", "B"): 10})
+    two_roads = build_graph({("A", "M"): 4, ("M", "B"): 5})       # 4 + 5 = 9 minutes through a middle junction
+    areas = {"Area B": "B"}
+    assert "Area B" in build_coverage(nine, areas)[0]["A"], "exactly 9 minutes must count"
+    assert "Area B" not in build_coverage(ten, areas)[0]["A"], "10 minutes must not count"
+    assert "Area B" in build_coverage(two_roads, areas)[0]["A"], "9 minutes over two roads must count"
