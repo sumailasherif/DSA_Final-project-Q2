@@ -85,3 +85,43 @@ def show_extras(graph: dict, coverage: dict, areas: dict) -> None:
         g = len(greedy_place_stops(coverage, k)[1])
         n = exhaustive_best_stops(coverage, areas, k)[1]
         print(f"  k={k}: greedy {g:2}  optimal {n:2}  gap {n - g}")
+
+        """This function runs the whole project in order: checks, answers, measurements, then charts."""
+def run_everything() -> None:
+    graph, areas = load_road_network(verbose=True), load_residential_areas()
+    coverage, _ = build_coverage(graph, areas)
+    # We only measure if every check passes first.
+    print("\nStep 1: Correctness checks")
+    if not run_correctness_checks():
+        print("Stopping: fix the failing checks before measuring.")
+        return
+    print("\nStep 2: The answers")
+    show_fastest_route(graph)
+    show_greedy(coverage)
+    show_exhaustive(coverage, areas)
+    show_counterexample()
+    print("\nStep 3: Measurements (takes under a minute)")
+    run_all_measurements()
+    print("\nStep 4: Plots")
+    plot_all()
+
+    
+
+"""This function runs everything in order: checks, answers, measurements, then charts."""
+def run_everything() -> None:
+    graph, areas = load_road_network(verbose=True), load_residential_areas()
+    coverage, _ = build_coverage(graph, areas)
+    # We only measure if every check passes first.
+    print("\nStep 1: Correctness checks")
+    if not run_correctness_checks():
+        print("Stopping: fix the failing checks before measuring.")
+        return
+    print("\nStep 2: The answers")
+    show_fastest_route(graph)
+    show_greedy(coverage)
+    show_exhaustive(coverage, areas)
+    show_counterexample()
+    print("\nStep 3: Measurements (takes under a minute)")
+    run_all_measurements()
+    print("\nStep 4: Plots")
+    plot_all()
