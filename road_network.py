@@ -1,7 +1,15 @@
 import csv
 import os
 import random
- 
+
+
+"""1. The real network: we load the roads and residential areas from the two CSV files
+   and store the roads as an adjacency list, graph[junction] = [(neighbour, minutes), ...].
+   2. Random networks: same density as the real one, for testing how our algorithms scale.
+   3. The trap network: a small network we built on purpose so that greedy loses badly.
+
+One thing we noticed in the data is that: the CSV has 25 rows but only 24 real roads, because
+"Moka,St Pierre,8" and "St Pierre,Moka,8" are the same road written twice."""
 HERE = os.path.dirname(os.path.abspath(__file__))
  
 """This helps us find the CSV file even if we run the code from a different folder in our  Code."""
