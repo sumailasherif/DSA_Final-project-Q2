@@ -144,6 +144,13 @@ def main() -> None:
         else:
             print("Invalid choice, try again.")
 
+    #Our  "python main.py --all" runs everything, "python main.py" opens the menu.
+if __name__ == "__main__":
+    if "--all" in sys.argv:
+        run_everything()
+    else:
+        main()
+
 """This function runs everything in order: checks, answers, measurements, then charts."""
 def run_everything() -> None:
     graph, areas = load_road_network(verbose=True), load_residential_areas()
