@@ -240,3 +240,12 @@ def scaling_growing_k(sizes=(9, 12, 15, 18, 21, 24), projected=(30, 36, 45, 60))
         print(f"  V={v} k={k}: C(V,k)={comb(v, k):,} -> about {_human(secs)} (projected at {us:.2f} us/subset)")
     save_csv(rows, "scaling_growing_k.csv")
     return rows
+
+"""This function turns seconds into minutes, hours, days or years so the big numbers are easy to read."""
+def _human(seconds: float) -> str:
+    for unit, size in (("years", 31_536_000), ("days", 86_400), ("hours", 3600), ("minutes", 60)):
+        if seconds >= size:
+            return f"{seconds / size:,.1f} {unit}"
+    return f"{seconds:,.2f} seconds"
+
+    git add benchmark.py; git commit -m "Run all six measurement sections one after the other"
