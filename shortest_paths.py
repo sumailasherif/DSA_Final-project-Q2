@@ -104,6 +104,37 @@ def fewest_roads_route(graph: dict, start: str, end: str) -> list[str]:
         return []
     return build_path(prev, end)    # same walk back as Dijkstra
 
+# ---------------------------------------------------------------- Floyd-Warshall: every pair at once, to check Dijkstra
+
+# Infinity is the starting time between two junctions before we know any road between them.
+INF = float("inf")
+
+
+"""This function uses Floyd-Warshall to find the shortest time between EVERY pair of junctions.
+It returns (dist, stats), where dist[a][b] is the shortest time from a to b. We use it to check
+Dijkstra, and it always does exactly V^3 steps no matter how few roads there are."""
+def all_pairs_check(graph: dict) -> tuple[dict, dict]:
+    nodes = sorted(graph)
+
+    # We start with 0 from a junction to itself and infinity everywhere else.
+    dist = {a: {b: (0 if a == b else INF) for b in nodes} for a in nodes}
+
+    # Then we fill in the direct roads we already know.
+    for a in nodes:
+        for b, minutes in graph[a]:
+            dist[a][b] = min(dist[a][b], minutes)
+
+    # For every junction k, we check if going through k makes any trip i to j faster.
+    stats = {"inner_steps": 0}
+    for k in nodes:
+        for i in nodes:
+            for j in nodes:
+                stats["inner_steps"] += 1
+                through_k = dist[i][k] + dist[k][j]
+                if through_k < dist[i][j]:
+                    dist[i][j] = through_k
+    return dist, stats
+
 
 if __name__ == "__main__":
     # Running this file on its own prints the Curepipe to Pamplemousses route.
