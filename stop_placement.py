@@ -97,3 +97,28 @@ if __name__ == "__main__":
         print(f"{j:16} covers {len(cov[j]):2}: {sorted(cov[j])}")
     print("Operation counts (with 9-minute cutoff):", s)
 
+"""This function follows EVERY tie greedy could meet, not just the alphabetical choice.
+It returns {areas covered: how many tie-break paths end there}, which shows us how much of the greedy result actually depends on the tie-break rule."""
+def all_greedy_outcomes(coverage: dict, k: int) -> dict:
+    results = {}
+
+    def explore(stops: list, covered: frozenset):
+        # When we have k stops, we record how many areas this path covered.
+        if len(stops) == k:
+            results[len(covered)] = results.get(len(covered), 0) + 1
+            return
+
+        # We work out the gain for every junction left.
+        gains = {j: len(coverage[j] - covered) for j in coverage if j not in stops}
+        if not gains:
+            results[len(covered)] = results.get(len(covered), 0) + 1
+            return
+
+        # Instead of picking one winner, we try every junction that ties for the top gain.
+        top = max(gains.values())
+        for j in sorted(j for j, g in gains.items() if g == top):
+            explore(stops + [j], covered | coverage[j])
+
+    explore([], frozenset())
+    return dict(sorted(results.items()))
+
