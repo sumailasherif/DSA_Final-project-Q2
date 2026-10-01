@@ -271,3 +271,47 @@ def plot_coverage_vs_stops(output: str = "coverage_vs_stops.png") -> None:
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
     _save(output)
+
+    """This chart shows how exhaustive search grows, with 6 stops fixed and with k = V/3.
+
+The left side is the number of subsets (the operation count), the right side is the
+measured time. Both use a log scale, so a straight line going up means exponential growth.
+"""
+def plot_exhaustive_scaling(output: str = "exhaustive_scaling.png") -> None:
+    fixed = load("scaling_fixed_k.csv")
+    growing = load("scaling_growing_k.csv")
+    measured = [r for r in growing if r["measured"] == "yes"]
+    projected = [r for r in growing if r["measured"] == "projected"]
+
+    # Left panel: how many subsets exhaustive has to check.
+    fig, (left, right) = plt.subplots(1, 2, figsize=(11, 4.5))
+    left.plot([int(r["V"]) for r in fixed], [int(r["C(V,k)"]) for r in fixed],
+              marker="o", color="#2471A3", label="k fixed at 6 (polynomial, ~V^6)")
+    left.plot([int(r["V"]) for r in measured], [int(r["C(V,k)"]) for r in measured],
+              marker="o", color="#C0392B", label="k = V/3 (exponential)")
+    left.plot([int(measured[-1]["V"])] + [int(r["V"]) for r in projected],
+              [int(measured[-1]["C(V,k)"])] + [int(r["C(V,k)"]) for r in projected],
+              linestyle="--", color="#C0392B", alpha=0.6, label="k = V/3, counted not run")
+    left.set_yscale("log")
+    left.set_xlabel("Junctions (V)")
+    left.set_ylabel("Subsets the exhaustive search must check")
+    left.set_title("Operation count")
+    left.legend(fontsize=8)
+    left.grid(True, which="both", alpha=0.3)
+
+    # Right panel: the times we actually measured, with greedy added for comparison.
+    right.plot([int(r["V"]) for r in fixed], [float(r["exhaustive_ms"]) for r in fixed],
+               marker="o", color="#2471A3", label="Exhaustive, k = 6")
+    right.plot([int(r["V"]) for r in measured], [float(r["exhaustive_ms"]) for r in measured],
+               marker="o", color="#C0392B", label="Exhaustive, k = V/3")
+
+    right.plot([int(r["V"]) for r in fixed], [float(r["greedy_ms"]) for r in fixed],
+               marker="s", color="#7D3C98", label="Greedy, k = 6")
+    right.set_yscale("log")
+    right.set_xlabel("Junctions (V)")
+    right.set_ylabel("Median time of 5 runs (ms)")
+    right.set_title("Measured running time (selection step only)")
+    right.legend(fontsize=8)
+    right.grid(True, which="both", alpha=0.3)
+    fig.tight_layout()
+    _save(output)
