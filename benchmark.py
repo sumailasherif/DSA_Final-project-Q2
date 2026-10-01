@@ -212,3 +212,31 @@ def scaling_fixed_k(sizes=(12, 18, 24, 30, 36), k: int = K) -> list[dict]:
               f"(the V^6 limit, 2^6 = 64, is only reached for much larger V)")
     save_csv(rows, "scaling_fixed_k.csv")
     return rows
+
+"""This function shows what happens when the number of stops grows with the network (k = V/3).
+
+This is the case that makes the problem NP-hard. We actually run it up to V = 24, then for
+bigger networks we only count the subsets and estimate the time from our measured speed,
+because running them for real would take minutes, days or even years.
+"""
+def scaling_growing_k(sizes=(9, 12, 15, 18, 21, 24), projected=(30, 36, 45, 60)) -> list[dict]:
+    print("\n[6] Exhaustive cost when k grows with the network (k = V/3)")
+    rows = []
+    for v in sizes:
+        print(f"  V={v} ...", end="", flush=True)
+        r = _scaling_row(v, v // 3, seed=100 + v, runs=RUNS)
+        r["measured"] = "yes"
+        rows.append(r)
+        print(f" k={v // 3}  C(V,k)={r['C(V,k)']:>11,}  exhaustive {r['exhaustive_ms']:9.1f} ms")
+    # We use the speed from our biggest real run to estimate the bigger ones.
+    us = rows[-1]["us_per_subset"]
+    for v in projected:
+        k = v // 3
+        rows.append({"V": v, "k": k, "C(V,k)": comb(v, k), "subsets_evaluated": "",
+                     "exhaustive_ms": comb(v, k) * us / 1000, "us_per_subset": us,
+                     "greedy_gain_evaluations": "", "greedy_ms": "", "coverage_table_ms_single_run": "",
+                     "optimal": "", "greedy": "", "measured": "projected"})
+        secs = comb(v, k) * us / 1e6
+        print(f"  V={v} k={k}: C(V,k)={comb(v, k):,} -> about {_human(secs)} (projected at {us:.2f} us/subset)")
+    save_csv(rows, "scaling_growing_k.csv")
+    return rows
