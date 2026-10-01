@@ -62,3 +62,14 @@ def test_alphabetical_tie_break() -> None:
     stops, _, log, _ = greedy_place_stops(coverage, 1)
     assert stops == ["Alpha"], "a tie must go to the alphabetically first name"
     assert log[0]["tied_with"] == ["Zebra"]
+
+"""This checks our real answers: greedy's six stops cover 17, the best six cover 18, from 18,564 sets."""
+def test_supplied_answers() -> None:
+    g, a = load_road_network(), load_residential_areas()
+    cov, _ = build_coverage(g, a)
+    stops, covered, _, _ = greedy_place_stops(cov, 6)
+    assert stops == ["Quatre Bornes", "Arsenal", "Curepipe", "Ebene", "Moka", "Pailles"]
+    assert len(covered) == 17
+    best, n, s = exhaustive_best_stops(cov, a, 6)
+    assert n == 18 and s["subsets_evaluated"] == comb(18, 6) == 18564
+    assert len(areas_covered_by(best, cov)) == n, "reported set must really cover n areas"
