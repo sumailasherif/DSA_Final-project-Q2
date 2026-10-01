@@ -34,3 +34,13 @@ def test_fastest_route() -> None:
     assert sum(road_times_along(g, path)) == minutes, "route legs must add up to the total"
     route_back, minutes_back, _ = fastest_route(g, "Pamplemousses", "Curepipe")
     assert minutes_back == minutes, "two-way roads: same time in both directions"
+
+    """This checks that stopping Dijkstra at 9 minutes gives the same coverage with fewer relaxations."""
+def test_cutoff_gives_same_coverage() -> None:
+    cases = [(load_road_network(), load_residential_areas())]
+    cases += [generate_random_network(v, seed=s) for v in (8, 18, 30) for s in range(5)]
+    for g, a in cases:
+        with_cutoff, s1 = build_coverage(g, a, use_cutoff=True)
+        without, s2 = build_coverage(g, a, use_cutoff=False)
+        assert with_cutoff == without
+        assert s1["relaxations"] <= s2["relaxations"]
