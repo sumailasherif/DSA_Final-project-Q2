@@ -122,3 +122,33 @@ def all_greedy_outcomes(coverage: dict, k: int) -> dict:
     explore([], frozenset())
     return dict(sorted(results.items()))
 
+# ---------------------------------------------------------------- Exhaustive search (the baseline)
+
+"""This function tries every set of k junctions and returns (best stops, areas covered, stats)."""
+def exhaustive_best_stops(coverage: dict, areas: dict, k: int) -> tuple[list[str], int, dict]:
+    junctions, masks = to_bitmasks(coverage, areas)
+    best_count, best_combo = -1, None
+    stats = {"subsets_evaluated": 0, "or_operations": 0, "optimal_sets": 0,
+             "expected_subsets": comb(len(junctions), k)}     # what C(V, k) says we should check
+
+    # We go through every possible group of k junctions, one by one.
+    for combo in combinations(range(len(junctions)), k):
+        stats["subsets_evaluated"] += 1
+
+        # We join the coverage of the k junctions in this group.
+        mask = 0
+        for i in combo:
+            mask |= masks[i]
+        stats["or_operations"] += k
+        count = mask.bit_count()        # number of 1 bits = number of areas covered
+
+        # We keep the best we have seen so far, and count how many groups tie for the best.
+        if count > best_count:
+            best_count, best_combo = count, combo
+            stats["optimal_sets"] = 1
+        elif count == best_count:
+            stats["optimal_sets"] += 1
+
+    # We turn the winning positions back into junction names.
+    best_stops = [junctions[i] for i in best_combo] if best_combo else []
+    return best_stops, best_count, stats
