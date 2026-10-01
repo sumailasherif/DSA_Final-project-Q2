@@ -62,7 +62,35 @@ def load_residential_areas(filename: str = "Q2_residential_areas.csv") -> dict:
 def count_roads(graph: dict) -> int:
     return sum(len(neighbours) for neighbours in graph.values()) // 2
 
-# ---------------------------------------------------------------- 3. The trap network
+# The real network has 24 roads for 18 junctions, so we keep the same density.
+ROADS_PER_JUNCTION = 24 / 18
+
+
+"""This function builds a random connected network with v junctions and one area on each junction.
+We use a fixed seed so every run gives the same network (like random_arrays.py in our sorting coursework)."""
+def generate_random_network(v: int, seed: int = 0, min_minutes: int = 3,
+                            max_minutes: int = 12) -> tuple[dict, dict]:
+    rng = random.Random(seed)
+    names = [f"J{i:02d}" for i in range(v)]
+    roads = {}
+
+    # Step 1: we join every junction to one we already placed, so the whole network is connected.
+    order = names[:]
+    rng.shuffle(order)
+    for i in range(1, v):
+        a, b = order[i], order[rng.randrange(i)]
+        roads[tuple(sorted((a, b)))] = rng.randint(min_minutes, max_minutes)
+
+    # Step 2: we add random extra roads until it has the same density as the real network.
+    target = max(v - 1, round(v * ROADS_PER_JUNCTION))
+    while len(roads) < target:
+        a, b = rng.sample(names, 2)
+        roads.setdefault(tuple(sorted((a, b))), rng.randint(min_minutes, max_minutes))
+
+    # One residential area per junction, just like the real data.
+    graph = build_graph(roads)
+    areas = {f"Area {name}": name for name in names}
+    return graph, areas
 
 """This function builds the trap network where greedy loses, with m areas around each side hub."""
 def build_trap_network(m: int = 8) -> tuple[dict, dict]:
