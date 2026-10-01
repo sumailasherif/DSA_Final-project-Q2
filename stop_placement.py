@@ -152,3 +152,17 @@ def exhaustive_best_stops(coverage: dict, areas: dict, k: int) -> tuple[list[str
     # We turn the winning positions back into junction names.
     best_stops = [junctions[i] for i in best_combo] if best_combo else []
     return best_stops, best_count, stats
+
+# Running this file on its own prints the coverage table, the greedy rounds and the exhaustive best.
+if __name__ == "__main__":
+    from road_network import load_road_network, load_residential_areas
+    g, a = load_road_network(), load_residential_areas()
+    cov, s = build_coverage(g, a)
+    for j in sorted(cov, key=lambda x: (-len(cov[x]), x)):
+        print(f"{j:16} covers {len(cov[j]):2}: {sorted(cov[j])}")
+    print("Coverage operation counts (with 9-minute cutoff):", s)
+    stops, covered, log, gs = greedy_place_stops(cov, 6)
+    for row in log:
+        print(f"Round {row['round']}: {row['stop']:15} +{row['gain']} -> {row['total']:2}  tied with {row['tied_with']}")
+    best, n, es = exhaustive_best_stops(cov, a, 6)
+    print(f"Greedy {len(covered)} areas | Exhaustive best {n} areas {best} | gap {n - len(covered)}")
