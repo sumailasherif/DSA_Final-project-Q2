@@ -136,3 +136,5 @@ def run_correctness_checks() -> bool:
             print(f"  FAIL  {test.__name__}: {error}")
     print(f"{passed}/{len(TESTS)} checks passed.")
     return passed == len(TESTS)
+if __name__ == "__main__":
+    run_correctness_checks()
