@@ -1,7 +1,7 @@
 step,median_ms,main_operation,count,other_counts
-"Dijkstra: fastest route (1 source, full search)",0.0176,relaxations,19,pops=20 stale=2 edge_checks=48
-"Coverage table: 18 Dijkstras, full search",0.3646,relaxations,352,pops=370 stale=46 edge_checks=864
-"Coverage table: 18 Dijkstras, stop at 9 min",0.1175,relaxations,111,pops=76 stale=0 edge_checks=169
-Floyd-Warshall all pairs (rejected alternative),1.0839,inner_steps,5832,
-Greedy 6 stops (selection only),0.0355,gain_evaluations,93,covered=17 stops=Quatre Bornes/Arsenal/Curepipe/Ebene/Moka/Pailles
-Exhaustive 6 stops (selection only),8.6451,subsets_evaluated,18564,covered=18 optimal_sets=3 or_ops=111384 stops=Arsenal/Curepipe/Moka/Pailles/Quatre Bornes/Trou aux Biches
+"Dijkstra: fastest route (1 source, full search)",0.0164,relaxations,19,pops=20 stale=2 edge_checks=48
+"Coverage table: 18 Dijkstras, full search",0.3761,relaxations,352,pops=370 stale=46 edge_checks=864
+"Coverage table: 18 Dijkstras, stop at 9 min",0.1158,relaxations,111,pops=76 stale=0 edge_checks=169
+Floyd-Warshall all pairs (rejected alternative),1.148,inner_steps,5832,
+Greedy 6 stops (selection only),0.0294,gain_evaluations,93,covered=17 stops=Quatre Bornes/Arsenal/Curepipe/Ebene/Moka/Pailles
+Exhaustive 6 stops (selection only),6.897,subsets_evaluated,18564,covered=18 optimal_sets=3 or_ops=111384 stops=Arsenal/Curepipe/Moka/Pailles/Quatre Bornes/Trou aux Biches

@@ -34,7 +34,7 @@ def median_time(func, runs: int = RUNS, warmup: int = WARMUP, batch: int = 1) ->
         times.append((end - start) / batch)
     return statistics.median(times)
 
-    """This function saves our results to a CSV in the results folder, rounding decimals to 4 places."""
+"""This function saves our results to a CSV in the results folder, rounding decimals to 4 places."""
 def save_csv(rows: list[dict], filename: str) -> str:
     os.makedirs(RESULTS_DIR, exist_ok=True)
     path = os.path.join(RESULTS_DIR, filename)
@@ -261,7 +261,10 @@ def run_all_measurements() -> dict:
     }
 
 
-plt = None     
+# matplotlib is only loaded inside plot_all(), so the measurements still run without it.
+plt = None
+
+"""This function reads a CSV from the results folder back into a list of rows."""
 def load(filename: str) -> list[dict]:
     with open(os.path.join(RESULTS_DIR, filename)) as f:
         return list(csv.DictReader(f))
@@ -350,21 +353,7 @@ def _save(name: str) -> None:
     plt.close("all")
     print(f" This has been saved {path}")
 
-
-    global plt
-    try:
-        import matplotlib
-        matplotlib.use("Agg")           # we save the charts as files, so no pop-up window is needed
-        import matplotlib.pyplot as plt
-    except ImportError:
-        print("  matplotlib is not installed, so we skip the charts (pip install matplotlib)")
-        return
-    plot_coverage_vs_stops()
-    plot_exhaustive_scaling()
-    plot_counterexample()
-
-
-    
+"""This function loads matplotlib, then draws and saves all three charts."""
 def plot_all() -> None:
     global plt
     try:
@@ -377,15 +366,6 @@ def plot_all() -> None:
     plot_coverage_vs_stops()
     plot_exhaustive_scaling()
     plot_counterexample()
-
-"""This function runs every measurement in order and saves each one as a CSV in the results folder."""
-def run_all_measurements() -> None:
-    measure_real_network()
-    coverage_vs_stops()
-    tie_break_and_threshold()
-    counterexample_table()
-    scaling_fixed_k()
-    scaling_growing_k()
 
 if __name__ == "__main__":
     run_all_measurements()
