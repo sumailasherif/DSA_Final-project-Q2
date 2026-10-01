@@ -99,3 +99,13 @@ def test_greedy_never_beats_exhaustive() -> None:
                 assert len(gc) <= n
                 if k == 1:
                     assert len(gc) == n, "with one stop, greedy IS exhaustive"
+
+"""This checks the trap network: greedy picks Centre with no tie, gets 13, and the best (East + West) gets 16."""
+def test_counterexample() -> None:
+    g, a = build_trap_network(8)
+    cov, _ = build_coverage(g, a)
+    gs, gc, log, _ = greedy_place_stops(cov, 2)
+    es, n, _ = exhaustive_best_stops(cov, a, 2)
+    assert gs[0] == "Centre" and log[0]["tied_with"] == [], "round 1 is a clear win, not a tie"
+    assert (len(gc), n) == (13, 16)
+    assert sorted(es) == ["East", "West"]
