@@ -3,10 +3,11 @@ from math import comb
 
 from road_network import load_road_network, load_residential_areas, count_roads, build_trap_network
 from shortest_paths import fastest_route, road_times_along, fewest_roads_route
-from stop_placement 
-import (build_coverage, COVER_LIMIT, greedy_place_stops,all_greedy_outcomes, exhaustive_best_stops)
+from stop_placement import (build_coverage, COVER_LIMIT, greedy_place_stops,
+                            all_greedy_outcomes, exhaustive_best_stops)
 from tests import run_correctness_checks
 from benchmark import run_all_measurements, plot_all
+
 """The two ends of our new bus route."""
 START, END = "Curepipe", "Pamplemousses"
 
@@ -83,7 +84,7 @@ def show_extras(graph: dict, coverage: dict, areas: dict) -> None:
         n = exhaustive_best_stops(coverage, areas, k)[1]
         print(f"  k={k}: greedy {g:2}  optimal {n:2}  gap {n - g}")
 
-        """This function runs the whole project in order: checks, answers, measurements, then charts."""
+"""This function runs the whole project in order: checks, answers, measurements, then charts."""
 def run_everything() -> None:
     graph, areas = load_road_network(verbose=True), load_residential_areas()
     coverage, _ = build_coverage(graph, areas)
@@ -102,7 +103,7 @@ def run_everything() -> None:
     print("\nStep 4: Plots")
     plot_all()
 
-    """This function prints the menu options."""
+"""This function prints the menu options."""
 def show_menu() -> None:
     print("\n=== Curepipe -> Pamplemousses bus route ===")
     print("1. Show the road network")
@@ -115,7 +116,7 @@ def show_menu() -> None:
     print("8. Run everything: tests, measurements, CSVs and plots")
     print("9. Exit")
 
-    """This function loads the data once, then keeps showing the menu until we choose 9."""
+"""This function loads the data once, then keeps showing the menu until we choose 9."""
 def main() -> None:
     graph, areas = load_road_network(verbose=True), load_residential_areas()
     coverage, _ = build_coverage(graph, areas)
@@ -140,29 +141,9 @@ def main() -> None:
             actions[choice]()
         else:
             print("Invalid choice, try again.")
-
-    #Our  "python main.py --all" runs everything, "python main.py" opens the menu.
+#Our  "python main.py --all" runs everything, "python main.py" opens the menu.
 if __name__ == "__main__":
     if "--all" in sys.argv:
         run_everything()
     else:
         main()
-
-"""This function runs everything in order: checks, answers, measurements, then charts."""
-def run_everything() -> None:
-    graph, areas = load_road_network(verbose=True), load_residential_areas()
-    coverage, _ = build_coverage(graph, areas)
-    # We only measure if every check passes first.
-    print("\nStep 1: Correctness checks")
-    if not run_correctness_checks():
-        print("Stopping: fix the failing checks before measuring.")
-        return
-    print("\nStep 2: The answers")
-    show_fastest_route(graph)
-    show_greedy(coverage)
-    show_exhaustive(coverage, areas)
-    show_counterexample()
-    print("\nStep 3: Measurements (takes under a minute)")
-    run_all_measurements()
-    print("\nStep 4: Plots")
-    plot_all()
