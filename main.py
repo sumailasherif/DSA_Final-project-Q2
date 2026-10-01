@@ -118,7 +118,31 @@ def show_menu() -> None:
     print("8. Run everything: tests, measurements, CSVs and plots")
     print("9. Exit")
 
-    
+    """This function loads the data once, then keeps showing the menu until we choose 9."""
+def main() -> None:
+    graph, areas = load_road_network(verbose=True), load_residential_areas()
+    coverage, _ = build_coverage(graph, areas)
+    # Each menu number points to the function it should run.
+    actions = {
+        "1": lambda: show_network(graph, areas),
+        "2": lambda: show_fastest_route(graph),
+        "3": lambda: show_coverage(coverage),
+        "4": lambda: show_greedy(coverage),
+        "5": lambda: show_exhaustive(coverage, areas),
+        "6": show_counterexample,
+        "7": lambda: show_extras(graph, coverage, areas),
+        "8": run_everything,
+    }
+    while True:
+        show_menu()
+        choice = input("Enter your choice: ").strip()
+        if choice == "9":
+            print("Goodbye.")
+            break
+        if choice in actions:
+            actions[choice]()
+        else:
+            print("Invalid choice, try again.")
 
 """This function runs everything in order: checks, answers, measurements, then charts."""
 def run_everything() -> None:
