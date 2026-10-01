@@ -81,6 +81,29 @@ def road_times_along(graph: dict, path: list[str]) -> list[int]:
         legs.append(min(m for n, m in graph[a] if n == b))
     return legs
 
+# ---------------------------------------------------------------- BFS: the route with the fewest roads (optional extra)
+
+"""This function uses BFS to find the route with the FEWEST ROADS from start to end.
+BFS does not look at the minutes at all, so fewer roads does not mean faster: one long road
+(Quatre Bornes to Port Louis, 25 minutes) can replace a few short ones."""
+def fewest_roads_route(graph: dict, start: str, end: str) -> list[str]:
+    prev = {start: None}        # where we came from, also tells us which junctions we already visited
+    queue = deque([start])      # BFS uses a queue, first in first out
+
+    # We explore the network layer by layer: 1 road away, then 2 roads away, and so on.
+    while queue:
+        node = queue.popleft()
+        if node == end:
+            break
+        for neighbour, _ in sorted(graph[node]):       # sorted so we get the same answer every run
+            if neighbour not in prev:
+                prev[neighbour] = node
+                queue.append(neighbour)
+
+    if end not in prev:
+        return []
+    return build_path(prev, end)    # same walk back as Dijkstra
+
 
 if __name__ == "__main__":
     # Running this file on its own prints the Curepipe to Pamplemousses route.
