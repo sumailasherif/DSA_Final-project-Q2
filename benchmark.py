@@ -336,3 +336,20 @@ def _save(name: str) -> None:
     plt.savefig(path, dpi=150)
     plt.close("all")
     print(f" This has been saved {path}")
+
+def plot_all() -> None:
+    global plt
+    try:
+        import matplotlib
+        matplotlib.use("Agg")           # we save the charts as files, so no pop-up window is needed
+        import matplotlib.pyplot as plt
+    except ImportError:
+        print("  matplotlib is not installed, so we skip the charts (pip install matplotlib)")
+        return
+    plot_coverage_vs_stops()
+    plot_exhaustive_scaling()
+    plot_counterexample()
+
+    if __name__ == "__main__":
+    run_all_measurements()
+    plot_all()
