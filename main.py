@@ -1,17 +1,12 @@
 import sys
 from math import comb
 
-from road_network import load_road_network, load_residential_areas, count_roads
-from dijkstra import fastest_route, road_times_along
-from coverage import build_coverage, COVER_LIMIT
-from greedy_stops import greedy_place_stops, all_greedy_outcomes
-from exhaustive_stops import exhaustive_best_stops
-from counterexample import build_trap_network
-from bfs import fewest_roads_route
-from test import run_correctness_checks
-from measurement import run_all_measurements
-from results_plot import plot_all
-
+from road_network import load_road_network, load_residential_areas, count_roads, build_trap_network
+from shortest_paths import fastest_route, road_times_along, fewest_roads_route
+from stop_placement 
+import (build_coverage, COVER_LIMIT, greedy_place_stops,all_greedy_outcomes, exhaustive_best_stops)
+from tests import run_correctness_checks
+from benchmark import run_all_measurements, plot_all
 """The two ends of our new bus route."""
 START, END = "Curepipe", "Pamplemousses"
 
@@ -62,6 +57,8 @@ def show_exhaustive(coverage: dict, areas: dict, k: int = 6) -> None:
     outcomes = all_greedy_outcomes(coverage, k)
     print(f"  If every possible tie-break is followed, greedy ends on: " + ", ".join(f"{c} areas ({p} paths)" for c, p in outcomes.items()))
 
+
+"""This function runs our trap network, where greedy loses by 3 areas without any tie."""
 def show_counterexample(m: int = 8) -> None:
     g, a = build_trap_network(m)
     cov, _ = build_coverage(g, a)
