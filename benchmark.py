@@ -271,12 +271,7 @@ def plot_coverage_vs_stops(output: str = "coverage_vs_stops.png") -> None:
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
     _save(output)
-
-    """This chart shows how exhaustive search grows, with 6 stops fixed and with k = V/3.
-
-The left side is the number of subsets (the operation count), the right side is the
-measured time. Both use a log scale, so a straight line going up means exponential growth.
-"""
+    
 def plot_exhaustive_scaling(output: str = "exhaustive_scaling.png") -> None:
     fixed = load("scaling_fixed_k.csv")
     growing = load("scaling_growing_k.csv")
@@ -314,4 +309,24 @@ def plot_exhaustive_scaling(output: str = "exhaustive_scaling.png") -> None:
     right.legend(fontsize=8)
     right.grid(True, which="both", alpha=0.3)
     fig.tight_layout()
+    _save(output)
+
+
+def plot_counterexample(output: str = "counterexample_gap.png") -> None:
+    rows = [r for r in load("counterexample.csv") if r["k"] == "2"]
+    m = [int(r["m"]) for r in rows]
+    plt.figure(figsize=(7, 4.5))
+    plt.plot(m, [int(r["optimal"]) for r in rows], marker="o", color="#16A085", label="Exhaustive (West + East)")
+    plt.plot(m, [int(r["greedy"]) for r in rows], marker="s", linestyle="--", color="#C0392B", label="Greedy (Centre first)")
+    # We write the gap under each greedy point so it is easy to read.
+    for r in rows:
+        plt.annotate(f"gap {r['gap']}", (int(r["m"]), int(r["greedy"])), textcoords="offset points",
+                     xytext=(0, -14), ha="center", fontsize=8)
+    plt.xlabel("Areas around each hub (m)")
+    plt.ylabel("Areas covered with k = 2 stops")
+    plt.title("Trap network: greedy's loss grows with the network")
+    plt.xticks(m)
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
     _save(output)
