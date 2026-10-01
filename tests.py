@@ -54,3 +54,11 @@ def test_exactly_nine_counts() -> None:
     assert "Area B" in build_coverage(nine, areas)[0]["A"], "exactly 9 minutes must count"
     assert "Area B" not in build_coverage(ten, areas)[0]["A"], "10 minutes must not count"
     assert "Area B" in build_coverage(two_roads, areas)[0]["A"], "9 minutes over two roads must count"
+
+
+"""This checks that when two junctions tie, greedy picks the one that comes first alphabetically."""
+def test_alphabetical_tie_break() -> None:
+    coverage = {"Zebra": frozenset({"x", "y"}), "Alpha": frozenset({"p", "q"}), "Mid": frozenset({"x"})}
+    stops, _, log, _ = greedy_place_stops(coverage, 1)
+    assert stops == ["Alpha"], "a tie must go to the alphabetically first name"
+    assert log[0]["tied_with"] == ["Zebra"]
