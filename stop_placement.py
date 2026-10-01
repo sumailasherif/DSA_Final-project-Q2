@@ -1,6 +1,6 @@
-from dijkstra import dijkstra
- 
-COVER_LIMIT = 9     # an area is covered if it is at most 9 minutes from a stopf
+from shortest_paths import dijkstra
+
+COVER_LIMIT = 9     # an area is covered if it is at most 9 minutes from a stop
  
 """This function returns (coverage, total_stats), with one Dijkstra run from every junction."""
 def build_coverage(graph: dict, areas: dict, limit: int = COVER_LIMIT,
@@ -51,6 +51,42 @@ def to_bitmasks(coverage: dict, areas: dict) -> tuple[list[str], list[int]]:
             m |= 1 << area_index[area]    
         masks.append(m)
     return junctions, masks
+
+"""This function places k stops with greedy and returns (stops, covered areas, a log of each round, stats)."""
+def greedy_place_stops(coverage: dict, k: int, order: list[str] | None = None) -> tuple[list[str], set, list[dict], dict]:
+    candidates = list(order) if order is not None else sorted(coverage)
+    stops, covered, log = [], set(), []
+    stats = {"gain_evaluations": 0}     # how many times we checked a junction's gain
+
+    for round_number in range(1, k + 1):
+        best, best_gain, tied = None, -1, []
+
+        # We check every junction we have not picked yet and count how many NEW areas it adds.
+        for junction in candidates:
+            if junction in stops:
+                continue
+            stats["gain_evaluations"] += 1
+            gain = len(coverage[junction] - covered)     # only the areas not covered yet
+            if gain > best_gain:
+                best, best_gain, tied = junction, gain, [junction]
+            elif gain == best_gain:
+                tied.append(junction)                    # we note the ties so we can show them later
+
+        if best is None:        # this only happens if there are fewer junctions than k
+            break
+
+        # We add the winner as a stop and mark its areas as covered.
+        stops.append(best)
+        new_areas = coverage[best] - covered
+        covered |= new_areas
+
+
+        # We save what happened this round so main.py can print it round by round.
+        log.append({"round": round_number, "stop": best, "gain": best_gain,
+                    "total": len(covered), "tied_with": [t for t in tied if t != best],
+                    "new_areas": sorted(new_areas)})
+    return stops, covered, log, stats
+
 
  #Running this file on its own prints what every junction covers, biggest first.
 if __name__ == "__main__":
