@@ -76,3 +76,12 @@ def show_extras(graph: dict, coverage: dict, areas: dict) -> None:
     """These are the optional extras: the fewest-roads route with BFS, and coverage for 1 to 8 stops."""
     path = fewest_roads_route(graph, START, END)
     fast, minutes, _ = fastest_route(graph, START, END)
+
+    print(f"\nBFS fewest roads: {' -> '.join(path)}")
+    print(f"  {len(path) - 1} roads, {sum(road_times_along(graph, path))} min  "
+          f"vs fastest: {len(fast) - 1} roads, {minutes} min")
+    print("\nCoverage against number of stops:")
+    for k in range(1, 9):
+        g = len(greedy_place_stops(coverage, k)[1])
+        n = exhaustive_best_stops(coverage, areas, k)[1]
+        print(f"  k={k}: greedy {g:2}  optimal {n:2}  gap {n - g}")
