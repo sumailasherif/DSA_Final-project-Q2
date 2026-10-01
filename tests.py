@@ -73,3 +73,29 @@ def test_supplied_answers() -> None:
     best, n, s = exhaustive_best_stops(cov, a, 6)
     assert n == 18 and s["subsets_evaluated"] == comb(18, 6) == 18564
     assert len(areas_covered_by(best, cov)) == n, "reported set must really cover n areas"
+
+    """This checks greedy is never better than exhaustive, and with only one stop they must be equal."""
+def test_greedy_never_beats_exhaustive() -> None:
+    for v in (8, 12, 16):
+        for seed in range(10):
+            g, a = generate_random_network(v, seed=seed)
+            cov, _ = build_coverage(g, a)
+            for k in (1, 2, 3, 4):
+                _, gc, _, _ = greedy_place_stops(cov, k)
+                _, n, _ = exhaustive_best_stops(cov, a, k)
+                assert len(gc) <= n
+                if k == 1:
+                    assert len(gc) == n, "with one stop, greedy IS exhaustive"
+
+                    """This checks greedy is never better than exhaustive, and with only one stop they must be equal."""
+def test_greedy_never_beats_exhaustive() -> None:
+    for v in (8, 12, 16):
+        for seed in range(10):
+            g, a = generate_random_network(v, seed=seed)
+            cov, _ = build_coverage(g, a)
+            for k in (1, 2, 3, 4):
+                _, gc, _, _ = greedy_place_stops(cov, k)
+                _, n, _ = exhaustive_best_stops(cov, a, k)
+                assert len(gc) <= n
+                if k == 1:
+                    assert len(gc) == n, "with one stop, greedy IS exhaustive"
