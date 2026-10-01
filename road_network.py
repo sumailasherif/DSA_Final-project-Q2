@@ -62,6 +62,33 @@ def load_residential_areas(filename: str = "Q2_residential_areas.csv") -> dict:
 def count_roads(graph: dict) -> int:
     return sum(len(neighbours) for neighbours in graph.values()) // 2
 
+# ---------------------------------------------------------------- 3. The trap network
+
+"""This function builds the trap network where greedy loses, with m areas around each side hub."""
+def build_trap_network(m: int = 8) -> tuple[dict, dict]:
+    if m < 2 or m % 2:
+        raise ValueError("m must be an even number >= 2")
+    roads = {}
+
+    # West and East hubs, each with m junctions 5 minutes away.
+    for i in range(1, m + 1):
+        roads[("W" + str(i).zfill(2), "West")] = 5
+        roads[("E" + str(i).zfill(2), "East")] = 5
+
+    # Centre reaches half of each side in exactly 9 minutes (still counts as covered).
+    for i in range(1, m // 2 + 1):
+        roads[("Centre", "W" + str(i).zfill(2))] = 9
+        roads[("Centre", "E" + str(i).zfill(2))] = 9
+
+    # Centre's own village, so Centre covers one more area than the other hubs.
+    roads[("Centre", "Centre village")] = 1
+
+    # Every junction except the three hubs has a residential area on it.
+    graph = build_graph(roads)
+    areas = {j: j for j in graph if j not in ("West", "East", "Centre")}
+    return graph, areas
+
+
  # Running this file on its own just prints the network so we can check it loaded properly.
 if __name__ == "__main__":
     g = load_road_network(verbose=True)
@@ -69,3 +96,7 @@ if __name__ == "__main__":
     print(f"{len(a)} residential areas, {count_roads(g)} roads")
     for junction in sorted(g):
         print(f"  {junction}: {g[junction]}")
+
+    rg, ra = generate_random_network(18, seed=1)
+    tg, ta = build_trap_network(8)
+    print(f"Random network: {len(rg)} junctions, {count_roads(rg)} roads | Trap network: {len(ta)} areas")
