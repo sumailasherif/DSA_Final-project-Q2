@@ -117,3 +117,9 @@ def test_bfs_fewest_roads() -> None:
     fast, _, _ = fastest_route(g, "Curepipe", "Pamplemousses")
     assert len(path) - 1 == 6 and len(fast) - 1 == 8
     assert sum(road_times_along(g, path)) > 59
+
+    # The list of all our checks, run in this order.
+TESTS = [test_loading, test_dijkstra_matches_all_pairs_check, test_fastest_route,
+         test_cutoff_gives_same_coverage, test_exactly_nine_counts, test_alphabetical_tie_break,
+         test_supplied_answers, test_greedy_never_beats_exhaustive,
+         test_bitmask_search_matches_plain_sets, test_counterexample, test_bfs_fewest_roads]
