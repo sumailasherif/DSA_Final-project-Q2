@@ -14,3 +14,13 @@ def test_loading() -> None:
     assert count_roads(g) == 24, "25 rows minus the duplicated Moka-St Pierre road = 24 roads"
     assert len(a) == 18 and set(a.values()) <= set(g), "every area must sit at a real junction"
     assert all(b in [n for n, _ in g[a_]] for a_ in g for b, _ in g[a_]), "roads must be two-way"
+
+"""This checks Dijkstra against Floyd-Warshall (all_pairs_check) on every pair, on the real network and 15 random ones."""
+def test_dijkstra_matches_all_pairs_check() -> None:
+    graphs = [load_road_network()] + [generate_random_network(v, seed=s)[0] for v in (5, 10, 20) for s in range(5)]
+    for g in graphs:
+        fw, _ = all_pairs_check(g)
+        for source in g:
+            dist, _, _ = dijkstra(g, source)
+            for target in g:
+                assert dist[target] == fw[source][target], f"{source}->{target} disagrees"
