@@ -271,7 +271,7 @@ def plot_coverage_vs_stops(output: str = "coverage_vs_stops.png") -> None:
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
     _save(output)
-    
+
 def plot_exhaustive_scaling(output: str = "exhaustive_scaling.png") -> None:
     fixed = load("scaling_fixed_k.csv")
     growing = load("scaling_growing_k.csv")
@@ -330,3 +330,9 @@ def plot_counterexample(output: str = "counterexample_gap.png") -> None:
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
     _save(output)
+
+def _save(name: str) -> None:
+    path = os.path.join(RESULTS_DIR, name)
+    plt.savefig(path, dpi=150)
+    plt.close("all")
+    print(f" This has been saved {path}")
