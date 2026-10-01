@@ -24,3 +24,13 @@ def test_dijkstra_matches_all_pairs_check() -> None:
             dist, _, _ = dijkstra(g, source)
             for target in g:
                 assert dist[target] == fw[source][target], f"{source}->{target} disagrees"
+
+"""This checks the route is 59 minutes, the road times add up, and going back takes the same time."""
+def test_fastest_route() -> None:
+    g = load_road_network()
+    path, minutes, _ = fastest_route(g, "Curepipe", "Pamplemousses")
+    assert minutes == 59
+    assert path[0] == "Curepipe" and path[-1] == "Pamplemousses"
+    assert sum(road_times_along(g, path)) == minutes, "route legs must add up to the total"
+    route_back, minutes_back, _ = fastest_route(g, "Pamplemousses", "Curepipe")
+    assert minutes_back == minutes, "two-way roads: same time in both directions"
