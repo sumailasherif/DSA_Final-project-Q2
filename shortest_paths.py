@@ -1,5 +1,5 @@
 import heapq
-
+from collections import deque
 
 def dijkstra(graph: dict, source: str, cutoff: float | None = None) -> tuple[dict, dict, dict]:
     """This function returns our (dist, prev, stats) from the source junction.
@@ -135,13 +135,14 @@ def all_pairs_check(graph: dict) -> tuple[dict, dict]:
                     dist[i][j] = through_k
     return dist, stats
 
-
+# Running this file on its own prints the fastest route, the fewest-roads route and the Floyd-Warshall check.
 if __name__ == "__main__":
-    # Running this file on its own prints the Curepipe to Pamplemousses route.
     from road_network import load_road_network
-
     g = load_road_network()
     route, minutes, s = fastest_route(g, "Curepipe", "Pamplemousses")
-    print(" -> ".join(route))
-    print(f"Total: {minutes} minutes, {len(route) - 1} roads")
-    print("Operation counts:", s)
+    print("Fastest (Dijkstra):", " -> ".join(route), f"| {minutes} minutes, {len(route) - 1} roads")
+    print("  Operation counts:", s)
+    p = fewest_roads_route(g, "Curepipe", "Pamplemousses")
+    print("Fewest roads (BFS):", " -> ".join(p), f"| {sum(road_times_along(g, p))} minutes, {len(p) - 1} roads")
+    d, fs = all_pairs_check(g)
+    print(f"Floyd-Warshall check: {d['Curepipe']['Pamplemousses']} minutes, {fs['inner_steps']} inner steps")
