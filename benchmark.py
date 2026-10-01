@@ -33,3 +33,18 @@ def median_time(func, runs: int = RUNS, warmup: int = WARMUP, batch: int = 1) ->
         gc.enable()
         times.append((end - start) / batch)
     return statistics.median(times)
+
+    """This function saves our results to a CSV in the results folder, rounding decimals to 4 places."""
+def save_csv(rows: list[dict], filename: str) -> str:
+    os.makedirs(RESULTS_DIR, exist_ok=True)
+    path = os.path.join(RESULTS_DIR, filename)
+    fieldnames = []
+    for row in rows:                      # we collect every column name, in the order we first see them
+        fieldnames += [key for key in row if key not in fieldnames]
+    with open(path, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow({k: (round(v, 4) if isinstance(v, float) else v) for k, v in row.items()})
+    print(f"  saved {path}")
+    return path
