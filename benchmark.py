@@ -248,6 +248,19 @@ def _human(seconds: float) -> str:
             return f"{seconds / size:,.1f} {unit}"
     return f"{seconds:,.2f} seconds"
 
+
+"""This function runs all six measurement sections"""
+def run_all_measurements() -> dict:
+    return {
+        "real": measure_real_network(),
+        "coverage_vs_k": coverage_vs_stops(),
+        "tie_threshold": tie_break_and_threshold(),
+        "counterexample": counterexample_table(),
+        "fixed_k": scaling_fixed_k(),
+        "growing_k": scaling_growing_k(),
+    }
+
+
 plt = None     
 def load(filename: str) -> list[dict]:
     with open(os.path.join(RESULTS_DIR, filename)) as f:
