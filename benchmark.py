@@ -184,3 +184,31 @@ def _scaling_row(v: int, k: int, seed: int, runs: int) -> dict:
             "exhaustive_ms": ex_t * 1000, "us_per_subset": ex_t * 1e6 / s["subsets_evaluated"],
             "greedy_gain_evaluations": gs["gain_evaluations"], "greedy_ms": gr_t * 1000,
             "coverage_table_ms_single_run": coverage_ms, "optimal": n, "greedy": len(gcov)}
+
+            """This function shows how exhaustive grows when we keep 6 stops and make the network bigger.
+
+C(V, 6) is a polynomial of degree 6, so doubling V should get close to x64 for big V.
+We also work out the ratio between each size and the one before it.
+"""
+def scaling_fixed_k(sizes=(12, 18, 24, 30, 36), k: int = K) -> list[dict]:
+    print(f"\n[5] Exhaustive cost with k fixed at {k} (random networks, same density)")
+    rows = []
+    for v in sizes:
+        print(f"  V={v} ...", end="", flush=True)
+        r = _scaling_row(v, k, seed=v, runs=RUNS)
+        rows.append(r)
+        print(f" C(V,k)={r['C(V,k)']:>9,}  exhaustive {r['exhaustive_ms']:9.1f} ms  greedy {r['greedy_ms']:.3f} ms")
+    # We compare each size with the one before it, for both the subset count and the time.
+    for prev, cur in zip(rows, rows[1:]):
+        cur["count_ratio_vs_previous"] = cur["C(V,k)"] / prev["C(V,k)"]
+        cur["time_ratio_vs_previous"] = cur["exhaustive_ms"] / prev["exhaustive_ms"]
+    rows[0]["count_ratio_vs_previous"] = rows[0]["time_ratio_vs_previous"] = ""
+    # The doubling check from 18 to 36 junctions, the key number for the report.
+    base = next(r for r in rows if r["V"] == 18) if any(r["V"] == 18 for r in rows) else None
+    double = next((r for r in rows if r["V"] == 36), None)
+    if base and double:
+        print(f"  Doubling V from 18 to 36 multiplied subsets by {double['C(V,k)'] / base['C(V,k)']:.1f} "
+              f"and time by {double['exhaustive_ms'] / base['exhaustive_ms']:.1f} "
+              f"(the V^6 limit, 2^6 = 64, is only reached for much larger V)")
+    save_csv(rows, "scaling_fixed_k.csv")
+    return rows
