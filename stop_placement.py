@@ -1,3 +1,6 @@
+from itertools import combinations
+from math import comb
+
 from shortest_paths import dijkstra
 
 COVER_LIMIT = 9     # an area is covered if it is at most 9 minutes from a stop
