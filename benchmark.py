@@ -252,3 +252,22 @@ plt = None
 def load(filename: str) -> list[dict]:
     with open(os.path.join(RESULTS_DIR, filename)) as f:
         return list(csv.DictReader(f))
+
+        """This chart shows greedy against the true best for 1 to 8 stops, so we can see where the gap opens."""
+def plot_coverage_vs_stops(output: str = "coverage_vs_stops.png") -> None:
+    rows = load("coverage_vs_stops.csv")
+    k = [int(r["k"]) for r in rows]
+    plt.figure(figsize=(7, 4.5))
+    plt.plot(k, [int(r["optimal"]) for r in rows], marker="o", color="#16A085", label="Exhaustive (true best)")
+    plt.plot(k, [int(r["greedy"]) for r in rows], marker="s", linestyle="--", color="#C0392B", label="Greedy (A-Z tie-break)")
+    plt.axhline(18, color="grey", linewidth=0.8, linestyle=":")
+    plt.text(1, 18.2, "all 18 areas", color="grey", fontsize=8)
+    plt.xlabel("Number of stops (k)")
+    plt.ylabel("Residential areas covered (within 9 min)")
+    plt.title("Coverage against number of stops, supplied network")
+    plt.xticks(k)
+    plt.ylim(0, 19.5)
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    _save(output)
