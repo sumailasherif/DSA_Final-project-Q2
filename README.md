@@ -115,6 +115,17 @@ DSA_Final-project-Q2/
 └── results/                 CSVs and charts written by benchmark.py
 ```
 
+## How the Code Matches the Report
+
+| Claim in the report | Where to see it in the code |
+|---|---|
+| Dijkstra uses a binary heap, because "get the closest unsettled junction" is its most frequent operation | `shortest_paths.dijkstra` uses `heapq` and counts `pops` and `stale_pops` |
+| Coverage only needs times up to 9 minutes, so each search can stop early | `stop_placement.build_coverage` calls `dijkstra(..., cutoff=9)`: 111 relaxations instead of 352 |
+| Floyd-Warshall always does V³ steps however sparse the roads are | `shortest_paths.all_pairs_check`, `inner_steps` = 5,832 |
+| Exhaustive search joins coverage sets many times, so we use bitmasks | `stop_placement.to_bitmasks` and `exhaustive_best_stops` (OR plus `bit_count`) |
+| Greedy has no guarantee, and the loss is not only about the tie-break | `road_network.build_trap_network` and `benchmark.counterexample_table` |
+| With 6 stops fixed, exhaustive grows like V⁶. When stops grow with the network, it grows exponentially | `benchmark.scaling_fixed_k` and `benchmark.scaling_growing_k`, plus the chart `exhaustive_scaling.png` |
+
 ## Assumptions about the data
 
 - **Every road is two-way**, as the question says.
