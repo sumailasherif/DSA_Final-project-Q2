@@ -1,7 +1,7 @@
 step,median_ms,main_operation,count,other_counts
-"Dijkstra, fastest route",0.0165,relaxations,19,pops=20 stale=2 edge_checks=48
-"Coverage, no cutoff",0.3509,relaxations,352,pops=370 stale=46 edge_checks=864
-"Coverage, 9 min cutoff",0.1114,relaxations,111,pops=76 stale=0 edge_checks=169
-Floyd-Warshall (not used),1.0733,inner_steps,5832,
-"Greedy, 6 stops",0.0302,gain_evaluations,93,covered=17 stops=Quatre Bornes/Arsenal/Curepipe/Ebene/Moka/Pailles
-"Exhaustive, 6 stops",6.8825,subsets_evaluated,18564,covered=18 optimal_sets=3 or_ops=111384 stops=Arsenal/Curepipe/Moka/Pailles/Quatre Bornes/Trou aux Biches
+"Dijkstra, fastest route",0.016,relaxations,19,pops=20 stale=2 edge_checks=48
+"Coverage, no cutoff",0.3709,relaxations,352,pops=370 stale=46 edge_checks=864
+"Coverage, 9 min cutoff",0.1243,relaxations,111,pops=76 stale=0 edge_checks=169
+Floyd-Warshall (not used),0.9898,inner_steps,5832,
+"Greedy, 6 stops",0.0316,gain_evaluations,93,covered=17 stops=Quatre Bornes/Arsenal/Curepipe/Ebene/Moka/Pailles
+"Exhaustive, 6 stops",6.8347,subsets_evaluated,18564,covered=18 optimal_sets=3 or_ops=111384 stops=Arsenal/Curepipe/Moka/Pailles/Quatre Bornes/Trou aux Biches
