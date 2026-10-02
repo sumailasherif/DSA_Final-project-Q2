@@ -3,10 +3,11 @@ from math import comb
 
 from shortest_paths import dijkstra
 
-COVER_LIMIT = 9     # an area is covered if it is at most 9 minutes from a stop
- 
+MAX_MINUTES = 9    # an area is covered if it is at most 9 minutes from a stop
+Q = 6              # number of stops the question asks for
+
 """This function returns (coverage, total_stats), with one Dijkstra run from every junction."""
-def build_coverage(graph: dict, areas: dict, limit: int = COVER_LIMIT,
+def build_coverage(graph: dict, areas: dict, limit: int = MAX_MINUTES,
                    use_cutoff: bool = True) -> tuple[dict, dict]:
     coverage = {}
     total = {"pushes": 0, "pops": 0, "stale_pops": 0, "edge_checks": 0, "relaxations": 0}
@@ -15,25 +16,16 @@ def build_coverage(graph: dict, areas: dict, limit: int = COVER_LIMIT,
         # We find the travel time from this junction to everything within the limit.
         dist, _, stats = dijkstra(graph, junction, cutoff=limit if use_cutoff else None)
 
-          # Then we keep every area whose junction we reached in 9 minutes or less.
+        # Then we keep every area whose junction we reached in 9 minutes or less.
         coverage[junction] = frozenset(
             area for area, area_junction in areas.items()
             if area_junction in dist and dist[area_junction] <= limit
         )
 
-         # We add up the operation counts from all the Dijkstra runs.
+        # We add up the operation counts from all the Dijkstra runs.
         for key in total:
             total[key] += stats[key]
     return coverage, total
-
-     
-"""This function gives the full time[junction][area] table with no cutoff"""
-def travel_time_table(graph: dict, areas: dict) -> dict:
-    table = {}
-    for junction in sorted(graph):
-        dist, _, _ = dijkstra(graph, junction)
-        table[junction] = {area: dist.get(j, float("inf")) for area, j in areas.items()}
-    return table
 
 """This function joins the coverage of all the stops into one set of covered areas."""
 def areas_covered_by(stops, coverage: dict) -> set:
@@ -43,7 +35,6 @@ def areas_covered_by(stops, coverage: dict) -> set:
     return covered
 
 """This function turns each junction's coverage into a number where bit i is 1 if area i is covered."""
-
 def to_bitmasks(coverage: dict, areas: dict) -> tuple[list[str], list[int]]:
     area_index = {area: i for i, area in enumerate(sorted(areas))}   # gives every area its own bit position
     junctions = sorted(coverage)
@@ -89,16 +80,6 @@ def greedy_place_stops(coverage: dict, k: int, order: list[str] | None = None) -
                     "total": len(covered), "tied_with": [t for t in tied if t != best],
                     "new_areas": sorted(new_areas)})
     return stops, covered, log, stats
-
-
- #Running this file on its own prints what every junction covers, biggest first.
-if __name__ == "__main__":
-    from road_network import load_road_network, load_residential_areas
-    g, a = load_road_network(), load_residential_areas()
-    cov, s = build_coverage(g, a)
-    for j in sorted(cov, key=lambda x: (-len(cov[x]), x)):
-        print(f"{j:16} covers {len(cov[j]):2}: {sorted(cov[j])}")
-    print("Operation counts (with 9-minute cutoff):", s)
 
 """This function follows EVERY tie greedy could meet, not just the alphabetical choice.
 It returns {areas covered: how many tie-break paths end there}, which shows us how much of the greedy result actually depends on the tie-break rule."""
@@ -162,10 +143,10 @@ if __name__ == "__main__":
     g, a = load_road_network(), load_residential_areas()
     cov, s = build_coverage(g, a)
     for j in sorted(cov, key=lambda x: (-len(cov[x]), x)):
-        print(f"{j:16} covers {len(cov[j]):2}: {sorted(cov[j])}")
-    print("Coverage operation counts (with 9-minute cutoff):", s)
-    stops, covered, log, gs = greedy_place_stops(cov, 6)
+        print(f"{j:16} {len(cov[j]):2}: {sorted(cov[j])}")
+    print("counts:", s)
+    stops, covered, log, _ = greedy_place_stops(cov, Q)
     for row in log:
-        print(f"Round {row['round']}: {row['stop']:15} +{row['gain']} -> {row['total']:2}  tied with {row['tied_with']}")
-    best, n, es = exhaustive_best_stops(cov, a, 6)
-    print(f"Greedy {len(covered)} areas | Exhaustive best {n} areas {best} | gap {n - len(covered)}")
+        print(f"Round {row['round']}: {row['stop']:15} +{row['gain']} -> {row['total']:2}  ties: {row['tied_with']}")
+    best, n, _ = exhaustive_best_stops(cov, a, Q)
+    print(f"Greedy {len(covered)}, best {n} {best}, gap {n - len(covered)}")

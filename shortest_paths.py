@@ -10,11 +10,11 @@ def dijkstra(graph: dict, source: str, cutoff: float | None = None) -> tuple[dic
     If we give a cutoff (like 9 minutes), the search stops once everything left
     is further than that, which is all we need for the coverage part"""
     if source not in graph:
-        raise KeyError(f"Unknown junction: {source}")
+        raise KeyError(f"No junction called {source}")
 
     # Our source is 0 minutes from itself and it is the first thing in the heap.
-    tentative = {source: 0}     # best time found so far for each junction (not final yet)
-    prev = {source: None}
+    best_so_far = {source: 0}   # best time found so far for each junction (not final yet)
+    prev: dict = {source: None}
     settled = {}                # junctions whose shortest time is now final
     heap = [(0, source)]        # (time, junction), the heap always gives us the smallest time first
     stats = {"pushes": 1, "pops": 0, "stale_pops": 0, "edge_checks": 0, "relaxations": 0}
@@ -40,9 +40,9 @@ def dijkstra(graph: dict, source: str, cutoff: float | None = None) -> tuple[dic
             if neighbour in settled:
                 continue
             new_time = time + minutes
-            if neighbour not in tentative or new_time < tentative[neighbour]:
+            if neighbour not in best_so_far or new_time < best_so_far[neighbour]:
                 # This is the relaxation step: we found a faster way, so we save it and push it on the heap.
-                tentative[neighbour] = new_time
+                best_so_far[neighbour] = new_time
                 prev[neighbour] = node
                 heapq.heappush(heap, (new_time, neighbour))
                 stats["relaxations"] += 1
@@ -87,7 +87,7 @@ def road_times_along(graph: dict, path: list[str]) -> list[int]:
 BFS does not look at the minutes at all, so fewer roads does not mean faster: one long road
 (Quatre Bornes to Port Louis, 25 minutes) can replace a few short ones."""
 def fewest_roads_route(graph: dict, start: str, end: str) -> list[str]:
-    prev = {start: None}        # where we came from, also tells us which junctions we already visited
+    prev: dict = {start: None}  # where we came from, also tells us which junctions we already visited
     queue = deque([start])      # BFS uses a queue, first in first out
 
     # We explore the network layer by layer: 1 road away, then 2 roads away, and so on.
@@ -107,7 +107,7 @@ def fewest_roads_route(graph: dict, start: str, end: str) -> list[str]:
 # ---------------------------------------------------------------- Floyd-Warshall: every pair at once, to check Dijkstra
 
 # Infinity is the starting time between two junctions before we know any road between them.
-INF = float("inf")
+UNREACHABLE = float("inf")
 
 
 """This function uses Floyd-Warshall to find the shortest time between EVERY pair of junctions.
@@ -117,7 +117,7 @@ def all_pairs_check(graph: dict) -> tuple[dict, dict]:
     nodes = sorted(graph)
 
     # We start with 0 from a junction to itself and infinity everywhere else.
-    dist = {a: {b: (0 if a == b else INF) for b in nodes} for a in nodes}
+    dist = {a: {b: (0 if a == b else UNREACHABLE) for b in nodes} for a in nodes}
 
     # Then we fill in the direct roads we already know.
     for a in nodes:
@@ -140,9 +140,9 @@ if __name__ == "__main__":
     from road_network import load_road_network
     g = load_road_network()
     route, minutes, s = fastest_route(g, "Curepipe", "Pamplemousses")
-    print("Fastest (Dijkstra):", " -> ".join(route), f"| {minutes} minutes, {len(route) - 1} roads")
-    print("  Operation counts:", s)
+    print("Dijkstra:", " -> ".join(route), f"({minutes} min, {len(route) - 1} roads)")
+    print("  counts:", s)
     p = fewest_roads_route(g, "Curepipe", "Pamplemousses")
-    print("Fewest roads (BFS):", " -> ".join(p), f"| {sum(road_times_along(g, p))} minutes, {len(p) - 1} roads")
+    print("BFS:", " -> ".join(p), f"({sum(road_times_along(g, p))} min, {len(p) - 1} roads)")
     d, fs = all_pairs_check(g)
-    print(f"Floyd-Warshall check: {d['Curepipe']['Pamplemousses']} minutes, {fs['inner_steps']} inner steps")
+    print(f"Floyd-Warshall agrees: {d['Curepipe']['Pamplemousses']} min ({fs['inner_steps']} steps)")

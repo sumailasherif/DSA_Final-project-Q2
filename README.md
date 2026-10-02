@@ -1,7 +1,7 @@
 # DSA Final Project, Question 2: A new bus route and where to put the stops
 
 This Data Structures and Algorithms final project models the Mauritius road network as a weighted graph.
-We use it to answer two questions:
+I used it  to answer two questions:
 
 1. **What is the fastest bus route from Curepipe to Pamplemousses?** We answer this with Dijkstra's algorithm.
 2. **Where should we put six bus stops so that as many residential areas as possible are covered?**

@@ -32,10 +32,10 @@ def test_fastest_route() -> None:
     assert minutes == 59
     assert path[0] == "Curepipe" and path[-1] == "Pamplemousses"
     assert sum(road_times_along(g, path)) == minutes, "route legs must add up to the total"
-    route_back, minutes_back, _ = fastest_route(g, "Pamplemousses", "Curepipe")
+    _, minutes_back, _ = fastest_route(g, "Pamplemousses", "Curepipe")
     assert minutes_back == minutes, "two-way roads: same time in both directions"
 
-    """This checks that stopping Dijkstra at 9 minutes gives the same coverage with fewer relaxations."""
+"""This checks that stopping Dijkstra at 9 minutes gives the same coverage with fewer relaxations."""
 def test_cutoff_gives_same_coverage() -> None:
     cases = [(load_road_network(), load_residential_areas())]
     cases += [generate_random_network(v, seed=s) for v in (8, 18, 30) for s in range(5)]
@@ -45,7 +45,7 @@ def test_cutoff_gives_same_coverage() -> None:
         assert with_cutoff == without
         assert s1["relaxations"] <= s2["relaxations"]
 
-        """This checks the boundary: exactly 9 minutes counts, 10 does not, and 4 + 5 over two roads counts too."""
+"""This checks the boundary: exactly 9 minutes counts, 10 does not, and 4 + 5 over two roads counts too."""
 def test_exactly_nine_counts() -> None:
     nine = build_graph({("A", "B"): 9})
     ten = build_graph({("A", "B"): 10})
@@ -74,7 +74,7 @@ def test_supplied_answers() -> None:
     assert n == 18 and s["subsets_evaluated"] == comb(18, 6) == 18564
     assert len(areas_covered_by(best, cov)) == n, "reported set must really cover n areas"
 
-    """This checks greedy is never better than exhaustive, and with only one stop they must be equal."""
+"""This checks greedy is never better than exhaustive, and with only one stop they must be equal."""
 def test_greedy_never_beats_exhaustive() -> None:
     for v in (8, 12, 16):
         for seed in range(10):
@@ -115,8 +115,8 @@ def test_bfs_fewest_roads() -> None:
     assert len(path) - 1 == 6 and len(fast) - 1 == 8
     assert sum(road_times_along(g, path)) > 59
 
-    # The list of all our checks, run in this order.
-TESTS = [test_loading, test_dijkstra_matches_all_pairs_check, test_fastest_route,
+# The list of all our checks, run in this order.
+CHECKS = [test_loading, test_dijkstra_matches_all_pairs_check, test_fastest_route,
          test_cutoff_gives_same_coverage, test_exactly_nine_counts, test_alphabetical_tie_break,
          test_supplied_answers, test_greedy_never_beats_exhaustive,
          test_bitmask_search_matches_plain_sets, test_counterexample, test_bfs_fewest_roads]
@@ -124,16 +124,15 @@ TESTS = [test_loading, test_dijkstra_matches_all_pairs_check, test_fastest_route
 """This function runs every check, prints PASS or FAIL for each, and returns True only if all passed."""
 def run_correctness_checks() -> bool:
     passed = 0
-    for test in TESTS:
+    for test in CHECKS:
         try:
             test()
-            print(f"  PASS  {test.__name__}")
+            print(f"  ok    {test.__name__}")
             passed += 1
         except AssertionError as error:
             print(f"  FAIL  {test.__name__}: {error}")
-    print(f"{passed}/{len(TESTS)} checks passed.")
-    return passed == len(TESTS)
+    print(f"{passed}/{len(CHECKS)} passed")
+    return passed == len(CHECKS)
+
 if __name__ == "__main__":
     run_correctness_checks()
-
-    

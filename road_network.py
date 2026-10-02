@@ -10,17 +10,17 @@ import random
 
 One thing we noticed in the data is that: the CSV has 25 rows but only 24 real roads, because
 "Moka,St Pierre,8" and "St Pierre,Moka,8" are the same road written twice."""
-HERE = os.path.dirname(os.path.abspath(__file__))
- 
-"""This helps us find the CSV file even if we run the code from a different folder in our  Code."""
+FOLDER = os.path.dirname(os.path.abspath(__file__))
+
+"""This helps us find the CSV file even if we run the code from a different folder."""
 def _path(filename: str) -> str:
-    return filename if os.path.isabs(filename) else os.path.join(HERE, filename)
+    return filename if os.path.isabs(filename) else os.path.join(FOLDER, filename)
 
 """This function reads every road from the CSV and returns the graph."""
 def load_road_network(filename: str = "Q2_road_network.csv", verbose: bool = False) -> dict:
     roads = {}          # key = the two junctions in sorted order, value = minutes
     duplicates = []     # any road we see a second time goes here as a duplicate
- 
+
     # We read the file row by row and store each road only once.
     with open(_path(filename), newline="") as f:
         reader = csv.DictReader(f)
@@ -30,7 +30,7 @@ def load_road_network(filename: str = "Q2_road_network.csv", verbose: bool = Fal
 
             # Dijkstra only works with times that are zero or more, so we stop here if one is negative.
             if minutes < 0:
-                raise ValueError(f"Negative travel time on {a}-{b}: Dijkstra needs non-negative weights")
+                raise ValueError(f"{a}-{b} has a negative time, Dijkstra can't handle that")
 
             # Sorting the two names means Moka-St Pierre and St Pierre-Moka give the same key.
             key = tuple(sorted((a, b)))
@@ -44,9 +44,9 @@ def load_road_network(filename: str = "Q2_road_network.csv", verbose: bool = Fal
 
     # When verbose is on we print a short summary and the duplicate we skipped.
     if verbose:
-        print(f"Loaded {len(graph)} junctions and {len(roads)} distinct roads from {filename}")
+        print(f"{len(graph)} junctions, {len(roads)} roads")
         for a, b, m in duplicates:
-            print(f"  Note: duplicate row ignored -> {a}, {b}, {m} (same road already listed)")
+            print(f"  skipped duplicate: {a} - {b} ({m} min)")
     return graph
 
 """This function turns our road list into the adjacency list, adding each road in both directions."""
@@ -71,7 +71,7 @@ def count_roads(graph: dict) -> int:
     return sum(len(neighbours) for neighbours in graph.values()) // 2
 
 # The real network has 24 roads for 18 junctions, so we keep the same density.
-ROADS_PER_JUNCTION = 24 / 18
+DENSITY = 24 / 18
 
 
 """This function builds a random connected network with v junctions and one area on each junction.
@@ -90,7 +90,8 @@ def generate_random_network(v: int, seed: int = 0, min_minutes: int = 3,
         roads[tuple(sorted((a, b)))] = rng.randint(min_minutes, max_minutes)
 
     # Step 2: we add random extra roads until it has the same density as the real network.
-    target = max(v - 1, round(v * ROADS_PER_JUNCTION))
+    # Tiny networks can't hold that many roads, so we cap it at every possible pair.
+    target = min(max(v - 1, round(v * DENSITY)), v * (v - 1) // 2)
     while len(roads) < target:
         a, b = rng.sample(names, 2)
         roads.setdefault(tuple(sorted((a, b))), rng.randint(min_minutes, max_minutes))
@@ -125,14 +126,14 @@ def build_trap_network(m: int = 8) -> tuple[dict, dict]:
     return graph, areas
 
 
- # Running this file on its own just prints the network so we can check it loaded properly.
+# Running this file on its own just prints the network so we can check it loaded properly.
 if __name__ == "__main__":
     g = load_road_network(verbose=True)
     a = load_residential_areas()
-    print(f"{len(a)} residential areas, {count_roads(g)} roads")
+    print(f"{len(a)} areas")
     for junction in sorted(g):
         print(f"  {junction}: {g[junction]}")
 
-    rg, ra = generate_random_network(18, seed=1)
-    tg, ta = build_trap_network(8)
-    print(f"Random network: {len(rg)} junctions, {count_roads(rg)} roads | Trap network: {len(ta)} areas")
+    rg, _ = generate_random_network(18, seed=1)
+    _, ta = build_trap_network(8)
+    print(f"Random: {len(rg)} junctions, {count_roads(rg)} roads | Trap: {len(ta)} areas")
